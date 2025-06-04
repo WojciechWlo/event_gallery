@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    Galeria
+  </title>
+  <link rel="stylesheet" href="static/css/loaded_file_preview.css">
+  <link rel="stylesheet" href="static/css/media.css">
+</head>
+<body>
+  <h1>Witaj, {{ user }}!</h1>
+  <h2>Formularz przesyłania obrazka</h2>
+  <form action="/upload-media" method="post" enctype="multipart/form-data">
+      <label for="name">Imię i nazwisko</label><br>
+      <input id="name" autocomplete="off" title="name" type="text" name="name" required><br>
+      <label for="files">Wybierz obrazki:</label><br>
+      <input id="files" title="files" type="file" name="files" accept="image/*, video/*" multiple required><br>
+      <br><br>
+      <button type="submit">Wyślij</button>
+  </form>
+  <div id="preview" class="preview-container"></div>
+  <div id="media-container"></div>
+
+  <script src="static/js/file_reader.js"></script>
+  <script src="static/js/gallery.js"></script>
+  <script>
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", async function (e) { 
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch("/upload-media", {
+          method: "POST",
+          body: formData,
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error("Błąd przesyłania: " + response.status);
+        }
+
+        const result = await response.json();
+        form.reset();
+        clearPreviews()
+
+      } catch (err) {
+        console.error("Wystąpił błąd:", err);
+      }
+    });
+/*
+    async function sendPaginationData() {
+      const data = {
+        page: 1,
+        page_size: 12
+      };
+
+      try {
+        const response = await fetch('/media', {
+          method: "POST",
+          credentials: 'include',
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          throw new Error('Błąd sieci: ' + response.status);
+        }
+
+        const json = await response.json();
+        console.log('Odpowiedź z serwera:', json);
+        displayMedia(json);
+
+      } catch (error) {
+        console.error('Wystąpił błąd:', error);
+      }
+    }
+
+    sendPaginationData();
+*/
+  </script>
+</body>
+</html>

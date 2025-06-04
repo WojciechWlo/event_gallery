@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# SQLite3 database files
+*.sqlite3
+*.db
+*.db-journal
+
+# VSCode settings
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Python environment settings
+*.env
+*.env.*
+
+# Coverage / testing
+htmlcov/
+.coverage
+.cache/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Mypy / Pylint / Pyright
+.mypy_cache/
+.dmypy.json
+.pytype/
+.pylint.d/
+
+# FastAPI specific
+instance/
