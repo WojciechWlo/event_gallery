@@ -49,3 +49,5 @@ coverage.xml
 
 # FastAPI specific
 instance/
+
+media/
