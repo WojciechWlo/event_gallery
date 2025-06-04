@@ -6,6 +6,7 @@ from database import get_db
 from sqlalchemy.orm import Session
 from models import Upload, Media, MediaTypeEnum
 from typing import List
+from utils.image2webp import convert_image_to_webp
 
 def save_upload_file(upload_file: UploadFile, dest_folder: str) -> str:
     os.makedirs(dest_folder, exist_ok=True)
@@ -44,6 +45,10 @@ def upload_files(files: List[UploadFile], name: str, server_url: str = "http://l
                 continue  # pomiń nieobsługiwane typy
 
             saved_path = save_upload_file(upload_file, base_path)
+
+            # Konwertuj obraz do WebP, jeśli to obraz
+            if mediatype == MediaTypeEnum.image:
+                saved_path = convert_image_to_webp(saved_path)
 
             media_record = Media(
                 filename=saved_path,

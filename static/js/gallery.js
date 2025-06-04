@@ -16,7 +16,7 @@ async function loadMedia() {
         const res = await fetch("/get_uploads_with_media_part", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ upload_last_id: lastId, uploads_limit: uploads_limit, media_limit: media_limit })
+            body: JSON.stringify({ upload_last_id: lastId, uploads_limit: uploads_limit })
         });
 
         if (!res.ok) {
@@ -34,14 +34,16 @@ async function loadMedia() {
             uploadContainer.style.marginBottom = "30px";
 
             const header = document.createElement("h3");
-            header.textContent = `Upload #${upload.upload_id}`;
+            header.textContent = `Upload #${upload.upload_id} by ${upload.nickname} | ${upload.datetime}`;
             header.style.marginBottom = "10px";
             uploadContainer.appendChild(header);
             
             const uploadMediaContainer = document.createElement("div");
             uploadMediaContainer.classList.add("upload-media-container");
-
-            upload.media.forEach(item => {
+            
+            uploadMediaContainer.mediaData = upload.media;
+            
+            upload.media.slice(0, media_limit).forEach((item,index) => {
                 let element;
                 if (item.mediatype === "image" || item.mediatype === "img") {
                     element = document.createElement("img");
@@ -53,11 +55,16 @@ async function loadMedia() {
                     element.classList.add("media-element");
                     element.src = item.filename;
                     element.controls = true;
+                    
                 }
 
-                element.addEventListener("click", () => {
-                    modalGallery.create();
-                    modalGallery.show();
+                element.addEventListener("click", function(event){
+                    if (element instanceof HTMLVideoElement) {
+                        event.preventDefault();
+                        element.pause();
+
+                    }
+                    modalGallery.create(uploadMediaContainer.mediaData, index);
                 });
 
                 if (element) {
@@ -71,19 +78,18 @@ async function loadMedia() {
             });
 
             // Jeśli przekroczono media_limit, to ostatniemu wrapperowi dajemy przyciemnienie
-            if (upload.media_count > media_limit && uploadMediaContainer.lastChild) {
+            if (upload.media.length > media_limit && uploadMediaContainer.lastChild) {
                 const lastWrapper = uploadMediaContainer.lastChild;
                 lastWrapper.classList.add("media-element-more-wrapper");
-                lastWrapper.style.setProperty("--content", `"+${upload.media_count - media_limit+1}"`);
+                lastWrapper.style.setProperty("--content", `"+${upload.media.length - media_limit+1}"`);
 
                 const mediaElement = lastWrapper.firstChild;
                 if (mediaElement) {
                     mediaElement.classList.add("media-element-more");  // przyciemnienie
-
                 }
             }
 
-            if (upload.media_count ==1 && uploadMediaContainer.lastChild){
+            if (upload.media.length ==1 && uploadMediaContainer.lastChild){
                 uploadMediaContainer.style.justifyContent = "center";
                 const lastWrapper = uploadMediaContainer.lastChild;
                 lastWrapper.style.width = "75%";
