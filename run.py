@@ -57,12 +57,11 @@ async def list_media(
     data = await request.json()
     upload_last_id = data.get("upload_last_id", None)
     uploads_limit = data.get("uploads_limit", 5)
-    media_limit = data.get("media_limit", 4)
 
-    results = get_media_after_id(upload_last_id, uploads_limit, media_limit)
+    results = get_media_after_id(upload_last_id, uploads_limit)
     return JSONResponse(content=results)
 
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("run:app", host="0.0.0.0", port=8000, reload=True)

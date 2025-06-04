@@ -13,10 +13,10 @@
 
 .media-element {
     width: 100%;
-    object-fit: cover;
+    height: 100%; /* wymusza pełne wypełnienie kontenera */
+    object-fit: cover; /* przycina i dopasowuje obraz */
     display: block;
     cursor: pointer;
-    max-height: 480px;
 }
 
 .media-element-more{
@@ -26,14 +26,13 @@
 .media-element-wrapper {
     position: relative;
     width: calc(50% - (var(--gap) / 2));
-    height: auto;
+    height: 400px; /* stała wysokość */
     box-sizing: border-box;
+    overflow: hidden; /* ukrywa wszystko poza wrapperem */
 }
 
 .media-element-more {
     display: block;
-    width: 100%;
-    height: auto;
     filter: brightness(0.3);
 }
 
