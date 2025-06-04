@@ -4,8 +4,10 @@
   <title>
     Galeria
   </title>
-  <link rel="stylesheet" href="static/css/loaded_file_preview.css">
-  <link rel="stylesheet" href="static/css/media.css">
+  <link rel="stylesheet" href="static/css/files_preview.css">
+  <link rel="stylesheet" href="static/css/gallery.css">
+  <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/modal_gallery.css">
 </head>
 <body>
   <h1>Witaj, {{ user }}!</h1>
@@ -19,10 +21,10 @@
       <button type="submit">Wyślij</button>
   </form>
   <div id="preview" class="preview-container"></div>
-  <div id="media-container"></div>
+  <div id="all-uploads-container"></div>
 
-  <script src="static/js/file_reader.js"></script>
-  <script src="static/js/gallery.js"></script>
+  <script src="static/js/files_preview.js"></script>
+  <script type="module" src="static/js/gallery.js"></script>
   <script>
     const form = document.querySelector("form");
 
@@ -50,35 +52,7 @@
         console.error("Wystąpił błąd:", err);
       }
     });
-/*
-    async function sendPaginationData() {
-      const data = {
-        page: 1,
-        page_size: 12
-      };
 
-      try {
-        const response = await fetch('/media', {
-          method: "POST",
-          credentials: 'include',
-          body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-          throw new Error('Błąd sieci: ' + response.status);
-        }
-
-        const json = await response.json();
-        console.log('Odpowiedź z serwera:', json);
-        displayMedia(json);
-
-      } catch (error) {
-        console.error('Wystąpił błąd:', error);
-      }
-    }
-
-    sendPaginationData();
-*/
   </script>
 </body>
 </html>

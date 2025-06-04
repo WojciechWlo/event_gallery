@@ -1,0 +1,10 @@
+.modal-gallery-overlay {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.7); /* przezroczysty czarny */
+    z-index: 1000;
+    display: none; /* domyślnie ukryty */
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}

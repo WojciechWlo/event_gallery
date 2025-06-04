@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from models import Media
+from models import Upload
 from database import get_db
-import math
 
 '''
 def get_media_paginated(page_size: int = 12, page: int = 1):
@@ -34,29 +33,42 @@ def get_media_paginated(page_size: int = 12, page: int = 1):
     }
 '''
 
-def get_media_after_id(last_id: int | None, limit: int = 12) -> dict:
+def get_media_after_id(last_id: int | None, limit: int = 5, media_limit: int = -1) -> dict:
     db_gen = get_db()
     db: Session = next(db_gen)
 
     try:
-        query = db.query(Media)
+        query = db.query(Upload)
 
         if last_id is not None:
-            query = query.filter(Media.id < last_id)
+            query = query.filter(Upload.id < last_id)
 
-        query = query.order_by(Media.id.desc()).limit(limit)
-        media_items = query.all()
+        query = query.order_by(Upload.id.desc()).limit(limit)
+        upload_items = query.all()
 
         results = {
-            "media": [
-                {
-                    "filename": item.filename,
-                    "mediatype": item.mediatype.value  # np. "img" lub "video"
-                }
-                for item in media_items
-            ],
-            "last_id": media_items[-1].id if media_items else None
+            "uploads": []
         }
+
+        for upload in upload_items:
+            total_media_count = len(upload.media)
+
+            # Jeśli media_limit == -1, zwróć wszystkie media, inaczej limituj
+            media_to_return = upload.media if media_limit == -1 else upload.media[:media_limit]
+
+            results["uploads"].append({
+                "upload_id": upload.id,
+                "media_count": total_media_count,
+                "media": [
+                    {
+                        "filename": media.filename,
+                        "mediatype": media.mediatype.value
+                    }
+                    for media in media_to_return
+                ]
+            })
+
+        results["last_id"] = upload_items[-1].id if upload_items else None
 
         return results
 
