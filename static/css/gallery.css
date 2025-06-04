@@ -13,9 +13,10 @@
 
 .media-element {
     width: 100%;
-    object-fit: contain;
+    object-fit: cover;
     display: block;
     cursor: pointer;
+    max-height: 480px;
 }
 
 .media-element-more{
@@ -48,4 +49,8 @@
     pointer-events: none;
     user-select: none;
     text-shadow: 0 0 5px rgba(0,0,0,0.7);
+}
+
+video::-webkit-media-controls-fullscreen-button {
+    display: none;
 }

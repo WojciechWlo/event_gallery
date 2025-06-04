@@ -120,7 +120,15 @@ async function autoLoadUntilScrollable() {
 }
 
 function scrollHandler() {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+    const containers = document.querySelectorAll(".upload-media-container");
+    const lastContainer = containers[containers.length - 1];
+
+    if (!lastContainer) return;
+
+    const rect = lastContainer.getBoundingClientRect();
+
+    // Jeśli dół ostatniego kontenera jest w zasięgu viewportu (np. 500px od dołu)
+    if (rect.bottom - 500 <= window.innerHeight) {
         loadMedia();
     }
 }
