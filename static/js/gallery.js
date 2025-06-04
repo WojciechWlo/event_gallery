@@ -56,6 +56,7 @@ async function loadMedia() {
                 }
 
                 element.addEventListener("click", () => {
+                    modalGallery.create();
                     modalGallery.show();
                 });
 
