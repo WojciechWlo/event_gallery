@@ -49,16 +49,17 @@ async def list_media(
     return JSONResponse(content=results)
 '''
 
-@app.post("/media")
+@app.post("/get_uploads_with_media_part")
 async def list_media(
     request: Request,
     user: str = Depends(authenticate_user),
 ):
     data = await request.json()
-    last_id = data.get("last_id", None)
-    limit = data.get("limit", 12)
+    upload_last_id = data.get("upload_last_id", None)
+    uploads_limit = data.get("uploads_limit", 5)
+    media_limit = data.get("media_limit", 4)
 
-    results = get_media_after_id(last_id, limit)
+    results = get_media_after_id(upload_last_id, uploads_limit, media_limit)
     return JSONResponse(content=results)
 
 
