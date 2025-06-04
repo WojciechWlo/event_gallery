@@ -90,8 +90,16 @@ export class ModalGallery {
     remove() {
         this.element.remove();
         this.element = null;
-        this.leftButton = null;
-        this.rightButton = null;
+        this.mediaElement.remove();
+        this.mediaElement = null;
+        if(this.leftButton){
+            this.leftButton.remove();
+            this.leftButton = null;
+        }
+        if(this.rightButton){
+            this.rightButton.remove();
+            this.rightButton = null;
+        }
         this.gallery = null;
     }
 }
