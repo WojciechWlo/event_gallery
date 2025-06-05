@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Strona główna - Event Gallery</title>
-  <link rel="stylesheet" href="static/css/style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block title %}Strona główna - Event Gallery{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
   <h1>Witaj!</h1>
-  <p><a href="/gallery">Przejdź do chronionej strony</a></p>
-</body>
-</html>
+  <p><a href="/gallery">Przejdź do galerii</a></p>
+{% endblock %}

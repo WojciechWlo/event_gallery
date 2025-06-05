@@ -83,6 +83,7 @@ export class ModalGallery {
 
         if (this.mediaElement) {
             this.mediaElement.classList.add("modal-gallery-media");
+            this.mediaElement.addEventListener("click", e => e.stopPropagation());
             this.element.appendChild(this.mediaElement);
         }
     }

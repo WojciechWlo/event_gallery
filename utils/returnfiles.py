@@ -63,15 +63,26 @@ def download_media_by_upload_id(upload_id: int) -> StreamingResponse:
 
         zip_buffer = io.BytesIO()
 
-        # 🧠 Formatowanie daty: 20240605_153000
+        # Tworzenie ZIP-a
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for media in upload.media:
+                if os.path.exists(media.filename):
+                    arcname = os.path.basename(media.filename)  # tylko nazwa pliku
+                    zip_file.write(media.filename, arcname=arcname)
+                else:
+                    print(f"File not found: {media.filename}")
+
+        zip_buffer.seek(0)  # ważne: ustaw wskaźnik na początek
+
+        # Nazwa pliku ZIP
         timestamp_str = upload.datetime.strftime("%Y%m%d%H%M%S")
-        safe_nickname = upload.nickname.replace(" ", "_")  # jeśli nick zawiera spacje
+        safe_nickname = upload.nickname.replace(" ", "_")
         filename = f"upload_{upload.id}_{safe_nickname}_{timestamp_str}.zip"
 
         return StreamingResponse(
             zip_buffer,
             media_type="application/zip",
-            headers={"Content-Disposition": f"attachment; filename={filename}"},
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
         )
 
     finally:

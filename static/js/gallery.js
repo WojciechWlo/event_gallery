@@ -143,10 +143,20 @@ function scrollHandler() {
     }
 }
 
+
 function getFilenameFromContentDisposition(header) {
-    // Przykładowa wartość header: 'attachment; filename=upload_123_nickname_20240605153245.zip'
-    const match = /filename="?(.+?)"?($|;)/.exec(header);
-    return match ? match[1] : "download.zip";
+    try {
+        const parts = header.split(";");
+        for (const part of parts) {
+            const [key, value] = part.trim().split("=");
+            if (key.toLowerCase() === "filename" && value) {
+                return value.replace(/^["']|["']$/g, "");
+            }
+        }
+    } catch (e) {
+        console.warn("Problem z parsowaniem Content-Disposition:", e);
+    }
+    return "download.zip";
 }
 
 function setDownloadURL(element, uploadId) {
@@ -163,18 +173,20 @@ function setDownloadURL(element, uploadId) {
             });
 
             if (!response.ok) {
-                throw new Error("Download failed");
+                throw new Error(`Download failed with status ${response.status}`);
             }
 
             const disposition = response.headers.get("Content-Disposition");
-            const filename = disposition ? getFilenameFromContentDisposition(disposition) : `upload_${uploadId}.zip`;
+            const filename = disposition
+                ? getFilenameFromContentDisposition(disposition)
+                : `upload_${uploadId}.zip`;
 
             const blob = await response.blob();
-
             const url = window.URL.createObjectURL(blob);
+
             const a = document.createElement("a");
             a.href = url;
-            a.download = filename;  // tutaj ustawiamy nazwę z nagłówka
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -185,6 +197,7 @@ function setDownloadURL(element, uploadId) {
         }
     });
 }
+
 
 autoLoadUntilScrollable();
 window.addEventListener("scroll", scrollHandler);
