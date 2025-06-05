@@ -1,16 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>
-    Galeria - Event Gallery
-  </title>
+{% extends "layout.html" %}
+
+{% block title %}Galeria - Event Gallery{% endblock %}
+
+{% block extra_css %}
   <link rel="stylesheet" href="static/css/files_preview.css">
-  <link rel="stylesheet" href="static/css/gallery.css">
-  <link rel="stylesheet" href="static/css/style.css">
-  <link rel="stylesheet" href="static/css/modal_gallery.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
   <h1>Witaj, {{ user }}!</h1>
   <h2>Formularz przesyłania mediów</h2>
   <form action="/upload-media" method="post" enctype="multipart/form-data">
@@ -54,5 +50,4 @@
     });
 
   </script>
-</body>
-</html>
+{% endblock %}
