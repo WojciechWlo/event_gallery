@@ -5,6 +5,7 @@ from fastapi.responses import StreamingResponse
 import io
 import zipfile
 import os
+from fastapi import HTTPException
 
 
 def get_media_after_id(last_id: int | None, limit: int = 5) -> dict:
@@ -75,18 +76,28 @@ def download_media_by_upload_id(upload_id: int) -> StreamingResponse:
         )
 
         if not upload or not upload.media:
-            raise Exception("Upload or media not found.")
+            raise HTTPException(status_code=404, detail="Upload or media not found.")
 
-        file_paths = [
-            media.filename for media in upload.media
-            if os.path.exists(media.filename)
-        ]
+        file_paths = []
+        for media in upload.media:
+            # Zamiana backslash na slash, żeby działało w Linux/Docker
+            cleaned_path = media.filename.replace("\\", "/")
+
+            # Jeśli ścieżka jest względna względem /app (wewnątrz kontenera), nie dodawaj /app
+            if os.path.exists(cleaned_path):
+                file_paths.append(cleaned_path)
+
+        if not file_paths:
+            raise HTTPException(status_code=404, detail="No media files found on disk for this upload.")
+
+        # Ustawiamy base_dir na katalog 'media', żeby zachować strukturę z rodzicem
+        base_dir = "media"
 
         timestamp_str = upload.datetime.strftime("%Y%m%d%H%M%S")
         safe_nickname = upload.nickname.replace(" ", "_")
         zip_name = f"upload_{upload.id}_{safe_nickname}_{timestamp_str}.zip"
 
-        return create_zip_response(file_paths, zip_name)
+        return create_zip_response_with_folders(base_dir, file_paths, zip_name)
 
     finally:
         db.close()
@@ -145,17 +156,27 @@ def create_zip_response_with_folders(base_dir: str, file_paths: list[str], zip_n
 
 
 def get_all_media_files_with_structure() -> StreamingResponse:
-    base_dir = "media"
+    db_gen = get_db()
+    db: Session = next(db_gen)
 
-    file_paths = []
-    if not os.path.exists(base_dir):
-        raise Exception("Folder media nie istnieje")
+    try:
+        uploads = db.query(Upload).options(joinedload(Upload.media)).all()
 
-    for root, dirs, files in os.walk(base_dir):
-        for file in files:
-            full_path = os.path.join(root, file)
-            file_paths.append(full_path)
+        file_paths = []
+        for upload in uploads:
+            for media in upload.media:
+                cleaned_path = media.filename.replace("\\", "/")
+                if os.path.exists(cleaned_path):
+                    file_paths.append(cleaned_path)
 
-    zip_name = f"media_all.zip"
+        if not file_paths:
+            raise HTTPException(status_code=404, detail="No media files found in database.")
 
-    return create_zip_response_with_folders(base_dir, file_paths, zip_name)
+        base_dir = os.path.commonpath(file_paths)
+
+        zip_name = "media_all.zip"
+
+        return create_zip_response_with_folders(base_dir, file_paths, zip_name)
+
+    finally:
+        db.close()

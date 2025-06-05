@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, UploadFile, File, Form, Response
+from fastapi import FastAPI, Request, Depends, UploadFile, File, Form
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from auth import authenticate_user
@@ -11,10 +11,14 @@ from utils.returnfiles import get_media_after_id,\
                               download_media_by_upload_id, \
                               get_all_uploads, \
                               get_all_media_files_with_structure
+from config import DEBUG
+from create_user import create_guest_user
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+create_guest_user()
+
+app = FastAPI(debug=DEBUG)
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/media", StaticFiles(directory="media"), name="media")
@@ -86,6 +90,3 @@ async def list_uploads(user: str = Depends(authenticate_user)):
 async def download_all_media_with_structure(user: str = Depends(authenticate_user)):
     return get_all_media_files_with_structure()
 
-
-if __name__ == "__main__":
-    uvicorn.run("run:app", host="0.0.0.0", port=8000, reload=True)

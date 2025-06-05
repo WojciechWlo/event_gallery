@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from models import Upload, Media, MediaTypeEnum
 from typing import List
 from utils.image2webp import convert_image_to_webp
+from config import SERVER_URL
 
 def save_upload_file(upload_file: UploadFile, dest_folder: str) -> str:
     os.makedirs(dest_folder, exist_ok=True)
@@ -17,7 +18,7 @@ def save_upload_file(upload_file: UploadFile, dest_folder: str) -> str:
 
     return file_path
 
-def upload_files(files: List[UploadFile], name: str, server_url: str = "http://localhost:8000") -> List[str]:
+def upload_files(files: List[UploadFile], name: str, server_url: str = SERVER_URL) -> List[str]:
     now = datetime.utcnow()
     timestamp = now.strftime("%Y%m%d%H%M%S")
     base_path = f"./media/{timestamp}"
