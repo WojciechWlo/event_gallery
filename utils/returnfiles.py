@@ -45,6 +45,22 @@ def get_media_after_id(last_id: int | None, limit: int = 5) -> dict:
     finally:
         db.close()
 
+def create_zip_response(file_paths: list[str], zip_name: str) -> StreamingResponse:
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        for file_path in file_paths:
+            arcname = os.path.basename(file_path)
+            zip_file.write(file_path, arcname=arcname)
+
+    zip_buffer.seek(0)
+
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename={zip_name}"}
+    )
+
 
 def download_media_by_upload_id(upload_id: int) -> StreamingResponse:
     db_gen = get_db()
@@ -61,29 +77,85 @@ def download_media_by_upload_id(upload_id: int) -> StreamingResponse:
         if not upload or not upload.media:
             raise Exception("Upload or media not found.")
 
-        zip_buffer = io.BytesIO()
+        file_paths = [
+            media.filename for media in upload.media
+            if os.path.exists(media.filename)
+        ]
 
-        # Tworzenie ZIP-a
-        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-            for media in upload.media:
-                if os.path.exists(media.filename):
-                    arcname = os.path.basename(media.filename)  # tylko nazwa pliku
-                    zip_file.write(media.filename, arcname=arcname)
-                else:
-                    print(f"File not found: {media.filename}")
-
-        zip_buffer.seek(0)  # ważne: ustaw wskaźnik na początek
-
-        # Nazwa pliku ZIP
         timestamp_str = upload.datetime.strftime("%Y%m%d%H%M%S")
         safe_nickname = upload.nickname.replace(" ", "_")
-        filename = f"upload_{upload.id}_{safe_nickname}_{timestamp_str}.zip"
+        zip_name = f"upload_{upload.id}_{safe_nickname}_{timestamp_str}.zip"
 
-        return StreamingResponse(
-            zip_buffer,
-            media_type="application/zip",
-            headers={"Content-Disposition": f"attachment; filename={filename}"}
-        )
+        return create_zip_response(file_paths, zip_name)
 
     finally:
         db.close()
+
+
+def get_all_uploads() -> list[dict]:
+    db_gen = get_db()
+    db: Session = next(db_gen)
+
+    try:
+        uploads = db.query(Upload).all()
+        return [
+            {
+                "id": upload.id,
+                "nickname": upload.nickname,
+                "datetime": upload.datetime.isoformat()
+            }
+            for upload in uploads
+        ]
+    finally:
+        db.close()
+
+
+def create_zip_response_with_folders(base_dir: str, file_paths: list[str], zip_name: str) -> StreamingResponse:
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        for file_path in file_paths:
+            # zachowujemy ścieżkę względem base_dir
+            arcname = os.path.relpath(file_path, base_dir)
+            zip_file.write(file_path, arcname=arcname)
+
+    zip_buffer.seek(0)
+
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename={zip_name}"}
+    )
+
+def create_zip_response_with_folders(base_dir: str, file_paths: list[str], zip_name: str) -> StreamingResponse:
+    zip_buffer = io.BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        for file_path in file_paths:
+            arcname = os.path.relpath(file_path, base_dir)
+            zip_file.write(file_path, arcname=arcname)
+
+    zip_buffer.seek(0)
+
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename={zip_name}"}
+    )
+
+
+def get_all_media_files_with_structure() -> StreamingResponse:
+    base_dir = "media"
+
+    file_paths = []
+    if not os.path.exists(base_dir):
+        raise Exception("Folder media nie istnieje")
+
+    for root, dirs, files in os.walk(base_dir):
+        for file in files:
+            full_path = os.path.join(root, file)
+            file_paths.append(full_path)
+
+    zip_name = f"media_all.zip"
+
+    return create_zip_response_with_folders(base_dir, file_paths, zip_name)

@@ -1,6 +1,7 @@
 #all-uploads-container {
     max-width: 1000px;
     margin: auto;
+    padding: 10px;
 }
 
 .upload-media-container {

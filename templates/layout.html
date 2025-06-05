@@ -14,8 +14,17 @@
 </head>
 <body>
     <header>
-        <h1>Moja strona</h1>
-        <!-- nawigacja, itp -->
+        <h1>{% block header %}
+            {% endblock %}
+        </h1>
+        <nav>
+            <ul class="nav-list">
+            <li><a href="/" class="nav-link">Strona główna</a></li>
+            <li><a href="/gallery" class="nav-link">Galeria</a></li>
+            <li><a href="/upload" class="nav-link">Upload</a></li>
+            <li><a href="/archive" class="nav-link">Archiwum</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main>

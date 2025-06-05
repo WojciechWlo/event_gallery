@@ -1,4 +1,5 @@
 import { ModalGallery } from "./modal_gallery.js";
+import {downloadMedia} from "./download_links.js"
 
 let modalGallery = new ModalGallery();
 
@@ -33,14 +34,30 @@ async function loadMedia() {
             uploadContainer.classList.add("upload-container");
             uploadContainer.style.marginBottom = "30px";
 
+            const headerContainer = document.createElement("div");
+            headerContainer.style.display = "flex";
+            headerContainer.style.alignItems = "center";  // wyrównanie pionowe
+
             const header = document.createElement("h3");
-            header.innerHTML = `<a href="#" id="download-link" style="text-decoration: underline; color: blue; cursor: pointer;">
-                Upload #${upload.upload_id} by ${upload.nickname} | ${upload.datetime}
-            </a>`;
-            setDownloadURL(header, upload.upload_id);
-            header.style.marginBottom = "10px";
-            uploadContainer.appendChild(header);
-            
+
+            header.innerHTML = `Upload #${upload.upload_id} by ${upload.nickname} | ${upload.datetime}`;
+
+            const downloadLink = document.createElement("a");
+            downloadLink.href = "#";
+            downloadLink.id = "download-link";
+            downloadLink.style.textDecoration = "underline";
+            downloadLink.style.color = "blue";
+            downloadLink.style.cursor = "pointer";
+            downloadLink.style.marginLeft = "10px";  // odstęp między headerem a linkiem
+            downloadLink.textContent = "Pobierz";
+
+            headerContainer.appendChild(header);
+            headerContainer.appendChild(downloadLink);
+
+            uploadContainer.appendChild(headerContainer);
+
+            downloadMedia(downloadLink, upload.upload_id);
+
             const uploadMediaContainer = document.createElement("div");
             uploadMediaContainer.classList.add("upload-media-container");
             
@@ -144,59 +161,7 @@ function scrollHandler() {
 }
 
 
-function getFilenameFromContentDisposition(header) {
-    try {
-        const parts = header.split(";");
-        for (const part of parts) {
-            const [key, value] = part.trim().split("=");
-            if (key.toLowerCase() === "filename" && value) {
-                return value.replace(/^["']|["']$/g, "");
-            }
-        }
-    } catch (e) {
-        console.warn("Problem z parsowaniem Content-Disposition:", e);
-    }
-    return "download.zip";
-}
 
-function setDownloadURL(element, uploadId) {
-    element.addEventListener("click", async (event) => {
-        event.preventDefault();
-
-        try {
-            const response = await fetch("/download_media_by_upload_id", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ upload_id: uploadId }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Download failed with status ${response.status}`);
-            }
-
-            const disposition = response.headers.get("Content-Disposition");
-            const filename = disposition
-                ? getFilenameFromContentDisposition(disposition)
-                : `upload_${uploadId}.zip`;
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Error downloading ZIP:", error);
-            alert("Download failed");
-        }
-    });
-}
 
 
 autoLoadUntilScrollable();
