@@ -90,3 +90,6 @@ async def list_uploads(user: str = Depends(authenticate_user)):
 async def download_all_media_with_structure(user: str = Depends(authenticate_user)):
     return get_all_media_files_with_structure()
 
+
+if __name__ == "__main__":
+    uvicorn.run("run:app", host="0.0.0.0", port=8000, reload=True)
