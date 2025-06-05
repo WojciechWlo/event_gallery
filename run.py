@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, UploadFile, File, HTTPException, status, Form
+from fastapi import FastAPI, Request, Depends, UploadFile, File, Form, Response
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from auth import authenticate_user
@@ -7,9 +7,10 @@ from typing import List
 from utils.savefiles import upload_files
 from database import Base, engine
 import uvicorn
-#from utils.returnfiles import get_media_paginated
-from utils.returnfiles import get_media_after_id
-from utils.returnfiles import download_media_by_upload_id
+from utils.returnfiles import get_media_after_id,\
+                              download_media_by_upload_id, \
+                              get_all_uploads, \
+                              get_all_media_files_with_structure
 
 Base.metadata.create_all(bind=engine)
 
@@ -27,9 +28,12 @@ async def gallery_page(request: Request, user: str = Depends(authenticate_user))
     return templates.TemplateResponse("gallery.html", {"request": request, "user": user})
 
 @app.get("/upload", response_class=HTMLResponse)
-async def gallery_page(request: Request, user: str = Depends(authenticate_user)):
+async def upload_page(request: Request, user: str = Depends(authenticate_user)):
     return templates.TemplateResponse("upload.html", {"request": request, "user": user})
 
+@app.get("/archive", response_class=HTMLResponse)
+async def archive_page(request: Request, user: str = Depends(authenticate_user)):
+    return templates.TemplateResponse("archive.html", {"request": request, "user": user})
 
 @app.post("/upload-media")
 async def upload_media(
@@ -41,19 +45,6 @@ async def upload_media(
 
     return JSONResponse(content={"uploaded_files": urls})
 
-'''
-@app.post("/media")
-async def list_media(
-    request: Request,
-    user: str = Depends(authenticate_user),
-):
-    data = await request.json()
-    page = data.get("page", 1)
-    page_size = data.get("page_size", 12)
-
-    results = get_media_paginated(page_size, page)
-    return JSONResponse(content=results)
-'''
 
 @app.post("/get_uploads_with_media_part")
 async def list_media(
@@ -83,6 +74,17 @@ async def list_media(
         return download_media_by_upload_id(upload_id)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+
+
+@app.post("/list_uploads")
+async def list_uploads(user: str = Depends(authenticate_user)):
+    uploads_data = get_all_uploads()
+    return JSONResponse(content=uploads_data)
+
+
+@app.post("/download_all_media")
+async def download_all_media_with_structure(user: str = Depends(authenticate_user)):
+    return get_all_media_files_with_structure()
 
 
 if __name__ == "__main__":

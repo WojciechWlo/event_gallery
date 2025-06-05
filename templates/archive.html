@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}Archiwum - Event Gallery{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="static/css/archive.css">
+{% endblock %}
+
+{% block header %}
+  Archiwum
+{% endblock %}
+
+{% block content %}
+  <div id="uploads-table-container"></div>
+  <script type="module" src="static/js/archive.js"></script>
+{% endblock %}
