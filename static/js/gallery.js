@@ -34,7 +34,10 @@ async function loadMedia() {
             uploadContainer.style.marginBottom = "30px";
 
             const header = document.createElement("h3");
-            header.textContent = `Upload #${upload.upload_id} by ${upload.nickname} | ${upload.datetime}`;
+            header.innerHTML = `<a href="#" id="download-link" style="text-decoration: underline; color: blue; cursor: pointer;">
+                Upload #${upload.upload_id} by ${upload.nickname} | ${upload.datetime}
+            </a>`;
+            setDownloadURL(header, upload.upload_id);
             header.style.marginBottom = "10px";
             uploadContainer.appendChild(header);
             
@@ -92,7 +95,7 @@ async function loadMedia() {
             if (upload.media.length ==1 && uploadMediaContainer.lastChild){
                 uploadMediaContainer.style.justifyContent = "center";
                 const lastWrapper = uploadMediaContainer.lastChild;
-                lastWrapper.style.width = "75%";
+                lastWrapper.style.width = "65%";
             }
 
             uploadContainer.appendChild(uploadMediaContainer);
@@ -138,6 +141,49 @@ function scrollHandler() {
     if (rect.bottom - 500 <= window.innerHeight) {
         loadMedia();
     }
+}
+
+function getFilenameFromContentDisposition(header) {
+    // Przykładowa wartość header: 'attachment; filename=upload_123_nickname_20240605153245.zip'
+    const match = /filename="?(.+?)"?($|;)/.exec(header);
+    return match ? match[1] : "download.zip";
+}
+
+function setDownloadURL(element, uploadId) {
+    element.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        try {
+            const response = await fetch("/download_media_by_upload_id", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ upload_id: uploadId }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Download failed");
+            }
+
+            const disposition = response.headers.get("Content-Disposition");
+            const filename = disposition ? getFilenameFromContentDisposition(disposition) : `upload_${uploadId}.zip`;
+
+            const blob = await response.blob();
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;  // tutaj ustawiamy nazwę z nagłówka
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error downloading ZIP:", error);
+            alert("Download failed");
+        }
+    });
 }
 
 autoLoadUntilScrollable();
