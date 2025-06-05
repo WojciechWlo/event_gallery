@@ -7,3 +7,4 @@ bcrypt
 itsdangerous
 Pillow
 python-multipart
+python-dotenv

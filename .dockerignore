@@ -1,0 +1,43 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# IDE/editor config
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Local environment files (optional, możesz zostawić tylko .env.dev w dev)
+.env
+.env.dev
+.env.prod
+
+# SQLite dev database (nie kopiuj do obrazu, tylko montuj wolumen)
+db.sqlite3
+
+# Docker
+docker-compose.dev.yaml
+docker-compose.prod.yaml
+Dockerfile.dev
+Dockerfile.prod
+
+# Logs, coverage, test cache
+*.log
+.coverage
+htmlcov/
+.pytest_cache/

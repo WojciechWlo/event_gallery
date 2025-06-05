@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
-        ["ID", "Nickname", "Data", "Akcja"].forEach(text => {
+        ["Upload", "Nickname", "Data", "Akcja"].forEach(text => {
             const th = document.createElement("th");
             th.textContent = text;
             thead.appendChild(th);
