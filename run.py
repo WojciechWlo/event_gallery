@@ -9,6 +9,7 @@ from database import Base, engine
 import uvicorn
 #from utils.returnfiles import get_media_paginated
 from utils.returnfiles import get_media_after_id
+from utils.returnfiles import download_media_by_upload_id
 
 Base.metadata.create_all(bind=engine)
 
@@ -24,6 +25,11 @@ async def home(request: Request):
 @app.get("/gallery", response_class=HTMLResponse)
 async def gallery_page(request: Request, user: str = Depends(authenticate_user)):
     return templates.TemplateResponse("gallery.html", {"request": request, "user": user})
+
+@app.get("/upload", response_class=HTMLResponse)
+async def gallery_page(request: Request, user: str = Depends(authenticate_user)):
+    return templates.TemplateResponse("upload.html", {"request": request, "user": user})
+
 
 @app.post("/upload-media")
 async def upload_media(
@@ -61,6 +67,22 @@ async def list_media(
     results = get_media_after_id(upload_last_id, uploads_limit)
     return JSONResponse(content=results)
 
+
+@app.post("/download_media_by_upload_id")
+async def list_media(
+    request: Request,
+    user: str = Depends(authenticate_user),
+):
+    data = await request.json()
+    upload_id = data.get("upload_id", None)
+
+    if not upload_id:
+        return JSONResponse(content={"error": "upload_id required"}, status_code=400)
+
+    try:
+        return download_media_by_upload_id(upload_id)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
 
 if __name__ == "__main__":

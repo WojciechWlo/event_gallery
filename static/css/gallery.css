@@ -26,9 +26,9 @@
 .media-element-wrapper {
     position: relative;
     width: calc(50% - (var(--gap) / 2));
-    height: 400px; /* stała wysokość */
     box-sizing: border-box;
     overflow: hidden; /* ukrywa wszystko poza wrapperem */
+    aspect-ratio: 1 / 1;
 }
 
 .media-element-more {

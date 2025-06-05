@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    Galeria - Event Gallery
+  </title>
+  <link rel="stylesheet" href="static/css/files_preview.css">
+  <link rel="stylesheet" href="static/css/gallery.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <link rel="stylesheet" href="static/css/modal_gallery.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+<body>
+  <h1>Witaj, {{ user }}!</h1>
+  <h2>Formularz przesyłania mediów</h2>
+  <form action="/upload-media" method="post" enctype="multipart/form-data">
+      <label for="name">Imię i nazwisko</label><br>
+      <input id="name" autocomplete="off" title="name" type="text" name="name" required><br>
+      <label for="files">Wybierz obrazki:</label><br>
+      <input id="files" title="files" type="file" name="files" accept="image/*, video/*" multiple required><br>
+      <br><br>
+      <button type="submit">Wyślij</button>
+  </form>
+  <div id="preview" class="preview-container"></div>
+  <div id="all-uploads-container"></div>
+
+  <script src="static/js/files_preview.js"></script>
+  <script>
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", async function (e) { 
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch("/upload-media", {
+          method: "POST",
+          body: formData,
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error("Błąd przesyłania: " + response.status);
+        }
+
+        const result = await response.json();
+        form.reset();
+        clearPreviews()
+
+      } catch (err) {
+        console.error("Wystąpił błąd:", err);
+      }
+    });
+
+  </script>
+</body>
+</html>
