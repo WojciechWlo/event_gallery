@@ -46,22 +46,6 @@ def get_media_after_id(last_id: int | None, limit: int = 5) -> dict:
     finally:
         db.close()
 
-def create_zip_response(file_paths: list[str], zip_name: str) -> StreamingResponse:
-    zip_buffer = io.BytesIO()
-
-    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-        for file_path in file_paths:
-            arcname = os.path.basename(file_path)
-            zip_file.write(file_path, arcname=arcname)
-
-    zip_buffer.seek(0)
-
-    return StreamingResponse(
-        zip_buffer,
-        media_type="application/zip",
-        headers={"Content-Disposition": f"attachment; filename={zip_name}"}
-    )
-
 
 def download_media_by_upload_id(upload_id: int) -> StreamingResponse:
     db_gen = get_db()
