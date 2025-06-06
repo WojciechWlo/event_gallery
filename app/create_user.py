@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models import User
+from models import User
 import bcrypt
 from database import get_db
 from config import GUEST_NAME, GUEST_PASSWORD

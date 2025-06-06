@@ -4,7 +4,7 @@ import shutil
 from datetime import datetime
 from database import get_db
 from sqlalchemy.orm import Session
-from app.models import Upload, Media, MediaTypeEnum
+from models import Upload, Media, MediaTypeEnum
 from typing import List
 from utils.image2webp import convert_image_to_webp
 from config import SERVER_URL
