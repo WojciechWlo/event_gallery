@@ -11,7 +11,7 @@ from utils.returnfiles import get_media_after_id,\
                               download_media_by_upload_id, \
                               get_all_uploads, \
                               get_all_media_files_with_structure
-from config import DEBUG
+from config import DEBUG, SSL_KEYFILE, SSL_CERTFILE
 from create_user import create_guest_user
 
 Base.metadata.create_all(bind=engine)
@@ -24,12 +24,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/media", StaticFiles(directory="media"), name="media")
 
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-@app.get("/gallery", response_class=HTMLResponse)
 async def gallery_page(request: Request, user: str = Depends(authenticate_user)):
-    return templates.TemplateResponse("gallery.html", {"request": request, "user": user})
+    return templates.TemplateResponse("index.html", {"request": request, "user": user})
 
 @app.get("/upload", response_class=HTMLResponse)
 async def upload_page(request: Request, user: str = Depends(authenticate_user)):
@@ -92,4 +88,12 @@ async def download_all_media_with_structure(user: str = Depends(authenticate_use
 
 
 if __name__ == "__main__":
-    uvicorn.run("run:app", host="0.0.0.0", port=8000, reload=True)
+    print("Keyfile:", SSL_KEYFILE)
+    print("Certfile:", SSL_CERTFILE)
+    uvicorn.run("run:app", 
+                host="0.0.0.0", 
+                port=8000, 
+                reload=True,
+                ssl_keyfile=SSL_KEYFILE,
+                ssl_certfile=SSL_CERTFILE
+                )
