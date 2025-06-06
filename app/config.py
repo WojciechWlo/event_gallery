@@ -3,7 +3,8 @@ import os
 
 load_dotenv()  # ładuje zmienne z .env
 
-DEBUG = os.getenv("DEBUG", "False")
+DEBUG = os.getenv("DEBUG", None)
+APP_ENV = os.getenv("APP_ENV", None)
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///db.sqlite3")
 SERVER_URL = os.getenv("SERVER_URL", "http://localhost:8000")
 GUEST_NAME = os.getenv("GUEST_NAME", "Guest")
