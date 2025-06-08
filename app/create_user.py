@@ -20,4 +20,4 @@ def create_guest_user():
         else:
             print("Użytkownik już istnieje.")
     finally:
-        db_gen.close()  # wywoła db.close() z generatora
+        db_gen.close()

@@ -12,11 +12,6 @@ from utils.returnfiles import get_media_after_id,\
                               get_all_uploads, \
                               get_all_media_files_with_structure
 from config import DEBUG, APP_ENV, SSL_KEYFILE, SSL_CERTFILE
-from create_user import create_guest_user
-
-Base.metadata.create_all(bind=engine)
-
-create_guest_user()
 
 app = FastAPI(debug=DEBUG)
 templates = Jinja2Templates(directory="templates")
@@ -38,7 +33,7 @@ async def archive_page(request: Request, user: str = Depends(authenticate_user))
 @app.post("/upload-media")
 async def upload_media(
     name: str = Form(...),
-    files: List[UploadFile] = File(...),  # param 'files', nie 'images'
+    files: List[UploadFile] = File(...),
     user: str = Depends(authenticate_user),
 ):
     urls = upload_files(files, name)
