@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # ładuje zmienne z .env
+load_dotenv()
 
 DEBUG = os.getenv("DEBUG", None)
 APP_ENV = os.getenv("APP_ENV", None)

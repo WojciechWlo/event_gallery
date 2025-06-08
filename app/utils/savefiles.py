@@ -28,26 +28,22 @@ def upload_files(files: List[UploadFile], name: str, server_url: str = SERVER_UR
     db: Session = next(db_gen)
 
     try:
-        # Rekord Upload
         new_upload = Upload(nickname=name, datetime = now)
         db.add(new_upload)
-        db.flush()  # żeby mieć dostęp do new_upload.id
+        db.flush()
 
         for upload_file in files:
             
-
-            # MIME → MediaTypeEnum
             content_type = upload_file.content_type
             if content_type.startswith("image/"):
                 mediatype = MediaTypeEnum.image
             elif content_type.startswith("video/"):
                 mediatype = MediaTypeEnum.movie
             else:
-                continue  # pomiń nieobsługiwane typy
+                continue
 
             saved_path = save_upload_file(upload_file, base_path)
 
-            # Konwertuj obraz do WebP, jeśli to obraz
             if mediatype == MediaTypeEnum.image:
                 saved_path = convert_image_to_webp(saved_path)
 
@@ -63,7 +59,14 @@ def upload_files(files: List[UploadFile], name: str, server_url: str = SERVER_UR
             urls.append(absolute_url)
 
         db.commit()
+
+    except Exception as e:
+        db.rollback()
+        print(f"Error: {e}")
+
     finally:
         db_gen.close()
 
+
+    
     return urls

@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile.prod
     container_name: fastapi_prod
     env_file: .env.prod
+    volumes:
+      - ./app/media:/app/media
     ports:
       - "8000:8000"
     environment:
@@ -22,6 +24,7 @@ services:
     env_file: .env.prod
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro
 
 volumes:
   postgres_data:

@@ -9,10 +9,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./app /app/
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY cert_gen.sh /cert_gen.sh
+RUN chmod +x /cert_gen.sh
+
+COPY entrypoint_prod.sh /entrypoint_prod.sh
+RUN chmod +x /entrypoint_prod.sh
 
 ENV PYTHONUNBUFFERED=1
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint_prod.sh"]
 CMD ["python", "run.py"]

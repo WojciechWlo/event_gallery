@@ -64,17 +64,14 @@ def download_media_by_upload_id(upload_id: int) -> StreamingResponse:
 
         file_paths = []
         for media in upload.media:
-            # Zamiana backslash na slash, żeby działało w Linux/Docker
             cleaned_path = media.filename.replace("\\", "/")
 
-            # Jeśli ścieżka jest względna względem /app (wewnątrz kontenera), nie dodawaj /app
             if os.path.exists(cleaned_path):
                 file_paths.append(cleaned_path)
 
         if not file_paths:
             raise HTTPException(status_code=404, detail="No media files found on disk for this upload.")
 
-        # Ustawiamy base_dir na katalog 'media', żeby zachować strukturę z rodzicem
         base_dir = "media"
 
         timestamp_str = upload.datetime.strftime("%Y%m%d%H%M%S")
@@ -110,7 +107,6 @@ def create_zip_response_with_folders(base_dir: str, file_paths: list[str], zip_n
 
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         for file_path in file_paths:
-            # zachowujemy ścieżkę względem base_dir
             arcname = os.path.relpath(file_path, base_dir)
             zip_file.write(file_path, arcname=arcname)
 
@@ -161,6 +157,9 @@ def get_all_media_files_with_structure() -> StreamingResponse:
         zip_name = "media_all.zip"
 
         return create_zip_response_with_folders(base_dir, file_paths, zip_name)
-
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
     finally:
         db.close()
