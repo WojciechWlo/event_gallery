@@ -15,3 +15,24 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
+
+  pyservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: pyservice_dev
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    command: tail -f /dev/null
+
+  sqliteweb:
+    image: coleifer/sqlite-web
+    container_name: sqlite_web_admin
+    volumes:
+      - ./app:/data
+    ports:
+      - "8081:8080"
+    entrypoint: ["sqlite_web", "--host", "0.0.0.0", "/data/db.sqlite3"]

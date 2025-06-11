@@ -14,6 +14,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security), db: Session = Depends(get_db)) -> str:
     user = db.query(User).filter(User.name == credentials.username).first()
+
     if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
