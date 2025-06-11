@@ -5,7 +5,6 @@ from auth import authenticate_user
 from fastapi.staticfiles import StaticFiles
 from typing import List
 from utils.savefiles import upload_files
-from database import Base, engine
 import uvicorn
 from utils.returnfiles import get_media_after_id,\
                               download_media_by_upload_id, \

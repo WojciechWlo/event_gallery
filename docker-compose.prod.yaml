@@ -17,6 +17,18 @@ services:
       - db
     restart: unless-stopped
 
+  pyservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: pyservice_prod
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    command: tail -f /dev/null
+
   db:
     image: postgres:15
     container_name: postgres_prod
@@ -26,5 +38,20 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_prod
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+
 volumes:
   postgres_data:
+  pgadmin_data:
