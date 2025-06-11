@@ -36,7 +36,8 @@ services:
     env_file: .env.prod
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro
+      - ./initdb.sql:/docker-entrypoint-initdb.d/01_initdb.sql:ro
+      - ./pg_autoinc.sql:/docker-entrypoint-initdb.d/02_pg_autoinc.sql:ro
 
   pgadmin:
     image: dpage/pgadmin4

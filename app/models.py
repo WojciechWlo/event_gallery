@@ -6,7 +6,7 @@ import enum
 
 class MediaTypeEnum(enum.Enum):
     image = "image"
-    movie = "video"
+    video = "video"
 
 
 class User(Base):

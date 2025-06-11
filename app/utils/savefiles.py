@@ -38,7 +38,7 @@ def upload_files(files: List[UploadFile], name: str, server_url: str = SERVER_UR
             if content_type.startswith("image/"):
                 mediatype = MediaTypeEnum.image
             elif content_type.startswith("video/"):
-                mediatype = MediaTypeEnum.movie
+                mediatype = MediaTypeEnum.video
             else:
                 continue
 
