@@ -1,5 +1,35 @@
 # event_gallery
 
+# Environment
+Create two files in project folder:
+* .env.dev
+```
+    APP_ENV=development
+    DEBUG=True
+
+    DATABASE_URL=sqlite:///./db.sqlite3
+
+    SERVER_URL=http://localhost:8000
+
+    SSL_KEYFILE=/certs/server.key
+    SSL_CERTFILE=/certs/server.cert
+```
+* .env.prod
+```
+APP_ENV=production
+DEBUG=False
+
+SERVER_URL=https://localhost:8000
+
+SSL_KEYFILE=/certs/server.key
+SSL_CERTFILE=/certs/server.cert
+
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=securepassword123
+POSTGRES_DB=pgdb
+DATABASE_URL=postgresql+psycopg2://admin:securepassword123@db:5432/pgdb
+```
+
 ## Launch Project
 
 ### Dev mode
@@ -39,34 +69,3 @@ When creating new user, use generated hash as password!
     insert into users (name, hashed_password) values ("user_name", "hashed_password");
 ```
 * Click "Execute Script" Button.
-
-# Environment
-Create two files in project folder:
-* .env.dev
-```
-    APP_ENV=development
-    DEBUG=True
-
-    DATABASE_URL=sqlite:///./db.sqlite3
-
-    SERVER_URL=http://localhost:8000
-
-    SSL_KEYFILE=/certs/server.key
-    SSL_CERTFILE=/certs/server.cert
-```
-* .env.prod
-```
-APP_ENV=production
-DEBUG=False
-
-SERVER_URL=https://localhost:8000
-
-SSL_KEYFILE=/certs/server.key
-SSL_CERTFILE=/certs/server.cert
-
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=securepassword123
-POSTGRES_DB=pgdb
-DATABASE_URL=postgresql+psycopg2://admin:securepassword123@db:5432/pgdb
-
-```
