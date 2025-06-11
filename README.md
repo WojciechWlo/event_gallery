@@ -26,7 +26,7 @@ When creating new user, use generated hash as password!
 * Click "Insert" button.
 
 ## Prod mode
-* Go to http://localhost:5050/ and log in using "Email Address" and "Username" used in pgadmin ([PGADMIN_DEFAULT_EMAIL], [PGADMIN_DEFAULT_PASSWORD]).
+* Go to http://localhost:5050/ and log in using "Email Address" and "Username" used in pgadmin service ([PGADMIN_DEFAULT_EMAIL], [PGADMIN_DEFAULT_PASSWORD]).
 * Connect to server using:
     * Server Name - postgres service container_name.
     * Host name/address - postgres service container_name.
