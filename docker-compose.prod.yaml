@@ -17,18 +17,6 @@ services:
       - db
     restart: unless-stopped
 
-  pyservice:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-    container_name: pyservice_prod
-    volumes:
-      - ./app:/app
-    working_dir: /app
-    tty: true
-    stdin_open: true
-    command: tail -f /dev/null
-
   db:
     image: postgres:15
     container_name: postgres_prod
