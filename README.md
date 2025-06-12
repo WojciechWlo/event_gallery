@@ -4,15 +4,15 @@
 Create two files in project folder:
 * .env.dev
 ```
-    APP_ENV=development
-    DEBUG=True
+APP_ENV=development
+DEBUG=True
 
-    DATABASE_URL=sqlite:///./db.sqlite3
+DATABASE_URL=sqlite:///./db.sqlite3
 
-    SERVER_URL=http://localhost:8000
+SERVER_URL=http://localhost:8000
 
-    SSL_KEYFILE=/certs/server.key
-    SSL_CERTFILE=/certs/server.cert
+SSL_KEYFILE=/certs/server.key
+SSL_CERTFILE=/certs/server.cert
 ```
 * .env.prod
 ```
