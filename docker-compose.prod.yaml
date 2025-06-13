@@ -5,17 +5,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: prod
     container_name: fastapi_prod
     env_file: .env.prod
     volumes:
       - ./app/media:/app/media
+      - ./certs:/certs
     ports:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
     depends_on:
       - db
+      - cert_generator
     restart: unless-stopped
 
   db:
@@ -41,6 +42,15 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - db
+
+  cert_generator:
+    image: alpine/openssl:3.5.0
+    container_name: cert_generator
+    volumes:
+      - ./certs:/certs
+      - ./cert_gen.sh:/cert_gen.sh:ro
+    entrypoint: ["sh", "/cert_gen.sh"]
+    restart: "no"
 
 volumes:
   postgres_data:
