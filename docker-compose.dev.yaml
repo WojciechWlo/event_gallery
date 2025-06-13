@@ -5,11 +5,11 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-      target: dev
     env_file: .env.dev
     container_name: fastapi_dev
     volumes:
       - ./app:/app
+      - ./certs:/certs
       - ./initdb.sql:/initdb.sql:ro
     ports:
       - "8000:8000"
@@ -18,18 +18,7 @@ services:
     restart: unless-stopped
     depends_on:
       - sqlite_loader
-
-  sqlite_loader:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: dev
-    container_name: sqlite_loader
-    volumes:
-      - ./app:/app
-      - ./initdb.sql:/initdb.sql:ro
-    command: ["/load_sqlite3.sh"]
-    restart: "no"
+      - cert_generator
 
   sqliteweb:
     image: coleifer/sqlite-web
@@ -39,3 +28,27 @@ services:
     ports:
       - "8081:8080"
     entrypoint: ["sqlite_web", "--host", "0.0.0.0", "/data/db.sqlite3"]
+
+  cert_generator:
+    image: alpine/openssl:3.5.0
+    container_name: cert_generator
+    volumes:
+      - ./certs:/certs
+      - ./cert_gen.sh:/cert_gen.sh:ro
+    entrypoint: ["sh", "/cert_gen.sh"]
+    restart: "no"
+
+  sqlite_loader:
+    image: alpine/openssl:3.5.0
+    container_name: sqlite_loader
+    volumes:
+      - ./app:/app
+      - ./initdb.sql:/initdb.sql:ro
+      - ./load_sqlite3.sh:/load_sqlite3.sh:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      apt-get update && \
+      apt-get install -y sqlite3 && \
+      chmod +x /load_sqlite3.sh && \
+      /load_sqlite3.sh
+    restart: "no"
