@@ -66,7 +66,7 @@ When creating new user, use generated hash as password!
     * Password - [POSTGRESS_PASSWORD]
 * In Query console insert:
 ```
-    insert into users (name, hashed_password) values ("user_name", "hashed_password");
+insert into users (name, hashed_password) values ("user_name", "hashed_password");
 ```
 * Click "Execute Script" Button.
 
