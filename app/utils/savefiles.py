@@ -33,6 +33,7 @@ def upload_files(files: List[UploadFile], name: str, server_url: str = SERVER_UR
         db.flush()
 
         for upload_file in files:
+            mediatype = None
             
             content_type = upload_file.content_type
             if content_type.startswith("image/"):

@@ -33,7 +33,7 @@ def get_media_after_id(last_id: int | None, limit: int = 5) -> dict:
                 "media": [
                     {
                         "filename": media.filename,
-                        "mediatype": media.mediatype.value
+                        "mediatype": media.mediatype
                     }
                     for media in upload.media
                 ]

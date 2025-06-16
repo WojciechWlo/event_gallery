@@ -1,4 +1,8 @@
 # event_gallery
+Application to share photos and videos from given event (for example: party, concert, wedding, etc.) with organizer and guests. Uploaded media can be stored and downloaded.
+
+![screenshot 1](docs/screen1.png)
+![screenshot 2](docs/screen2.png)
 
 # Environment
 Create two files in project folder:
@@ -76,10 +80,24 @@ After building environments, you should remember about changing any passwords de
 ### Changing password in PGAdmin
 To change password go to http://localhost:5050/ and log in. In upper right corner click email of logged account and select "Change Password".
 
-### Changing password in PostgreSQL
-To change password, you have to connect with your database, for example through PGAdmin panel. in Query console, insert command:
+### Changing passwords in PostgreSQL
+To change admin password, you have to connect with your database, for example through PGAdmin panel. In Query console, insert command:
 
 ```
-ALTER USER user_name WITH PASSWORD "new_password";
+ALTER USER [POSTGRES_USER] WITH PASSWORD 'new_admin_password';
 ```
 
+In initdb.sql, there is created tech user (in our case its name is "sql_event_gallery"). To change its password, in Query console, insert command:
+```
+ALTER USER sql_event_gallery WITH PASSWORD 'new_tech_password';
+```
+
+After changing password to tech user you should change variables in .env according to password you used.
+* POSTGRES_USER=sql_event_gallery
+* POSTGRESS_PASSWORD=new_tech_password
+* DATABASE_URL=postgresql+psycopg2://sql_event_gallery:new_tech_password@db:5432/pgdb
+
+Next, docker-compose, and relaunch it with:
+```
+docker-compose -f docker-compose.prod.yaml up
+```

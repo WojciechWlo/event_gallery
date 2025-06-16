@@ -2,9 +2,9 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
-import enum
+from enum import Enum
 
-class MediaTypeEnum(enum.Enum):
+class MediaTypeEnum(str, Enum):
     image = "image"
     video = "video"
 
@@ -31,6 +31,6 @@ class Media(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, index=True)
-    mediatype = Column(Enum(MediaTypeEnum), nullable=False)
+    mediatype = Column(String, nullable=False)
     upload_id = Column(Integer, ForeignKey("uploads.id"))
     upload = relationship("Upload", back_populates="media")
