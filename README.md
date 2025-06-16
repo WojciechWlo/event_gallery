@@ -97,7 +97,7 @@ After changing password to tech user you should change variables in .env accordi
 * POSTGRESS_PASSWORD=new_tech_password
 * DATABASE_URL=postgresql+psycopg2://sql_event_gallery:new_tech_password@db:5432/pgdb
 
-Next, docker-compose, and relaunch it with:
+Next, close docker-compose, and relaunch it with:
 ```
 docker-compose -f docker-compose.prod.yaml up
 ```
