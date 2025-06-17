@@ -19,7 +19,7 @@
       <label for="files">Wybierz obrazki:</label><br>
       <input id="files" title="files" type="file" name="files" accept="image/*, video/*" multiple required><br>
       <br><br>
-      <button type="submit">Wyślij</button>
+      <button type="submit">Wyślij</button><div id = "loading"></div>
   </form>
   <div id="preview" class="preview-container"></div>
   <div id="all-uploads-container"></div>
@@ -41,7 +41,7 @@
         });
 
         if (!response.ok) {
-          throw new Error("Błąd przesyłania: " + response.status);
+          throw new Error("Loading error: " + response.status);
         }
 
         const result = await response.json();
@@ -49,7 +49,7 @@
         clearPreviews()
 
       } catch (err) {
-        console.error("Wystąpił błąd:", err);
+        console.error("Error occured:", err);
       }
     });
 

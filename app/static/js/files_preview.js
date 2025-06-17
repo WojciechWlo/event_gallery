@@ -23,7 +23,6 @@ selectedFiles.forEach((file, index) => {
     img.src = e.target.result;
 
     const removeBtn = document.createElement('button');
-    removeBtn.innerText = '×';
     removeBtn.classList.add('remove-button');
     removeBtn.onclick = function () {
         selectedFiles.splice(index, 1);

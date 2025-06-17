@@ -30,3 +30,20 @@ header {
 h1{
     color: white;
 }
+.remove-button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: red;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+}
+
+.remove-button::before{
+    content: '×';
+    color: white;
+}
