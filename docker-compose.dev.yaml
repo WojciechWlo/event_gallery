@@ -10,7 +10,7 @@ services:
     volumes:
       - ./app:/app
       - ./certs:/certs
-      - ./initdb.sql:/initdb.sql:ro
+      - ./initdb.dev.sql:/initdb.dev.sql:ro
     ports:
       - "8000:8000"
     environment:
@@ -48,7 +48,7 @@ services:
     container_name: sqlite_loader
     volumes:
       - ./app:/app
-      - ./initdb.sql:/initdb.sql:ro
+      - ./initdb.dev.sql:/initdb.dev.sql:ro
       - ./load_sqlite3.sh:/load_sqlite3.sh
     entrypoint: /bin/sh
     command: >
