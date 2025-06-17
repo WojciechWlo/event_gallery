@@ -17,8 +17,10 @@ services:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
     depends_on:
-      - sqlite_loader
-      - cert_generator
+      sqlite_loader:
+        condition: service_completed_successfully
+      cert_generator:
+        condition: service_completed_successfully
 
   sqliteweb:
     image: coleifer/sqlite-web
@@ -28,6 +30,9 @@ services:
     ports:
       - "8081:8080"
     entrypoint: ["sqlite_web", "--host", "0.0.0.0", "/data/db.sqlite3"]
+    depends_on:
+      sqlite_loader:
+        condition: service_completed_successfully
 
   cert_generator:
     image: alpine/openssl:3.5.0
@@ -44,11 +49,11 @@ services:
     volumes:
       - ./app:/app
       - ./initdb.sql:/initdb.sql:ro
-      - ./load_sqlite3.sh:/load_sqlite3.sh:ro
-    entrypoint: ["/bin/sh", "-c"]
-    command: |
-      apt-get update && \
-      apt-get install -y sqlite3 && \
-      chmod +x /load_sqlite3.sh && \
-      /load_sqlite3.sh
+      - ./load_sqlite3.sh:/load_sqlite3.sh
+    entrypoint: /bin/sh
+    command: >
+      -c "apk update &&
+          apk add --no-cache sqlite bash &&
+          chmod +x /load_sqlite3.sh &&
+          /load_sqlite3.sh"
     restart: "no"

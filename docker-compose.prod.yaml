@@ -28,6 +28,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./initdb.sql:/docker-entrypoint-initdb.d/01_initdb.sql:ro
       - ./pg_autoinc.sql:/docker-entrypoint-initdb.d/02_pg_autoinc.sql:ro
+      - ./create_tech_user.sql:/docker-entrypoint-initdb.d/03_create_tech_user.sql:ro
 
   pgadmin:
     image: dpage/pgadmin4

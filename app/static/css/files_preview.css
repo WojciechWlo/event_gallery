@@ -13,16 +13,3 @@
     border: 1px solid #ccc;
     border-radius: 5px;
 }
-.remove-button {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background: red;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-}
