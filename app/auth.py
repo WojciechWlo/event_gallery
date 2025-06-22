@@ -2,12 +2,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 import bcrypt
-from database import SessionLocal
 from models import User
 from database import get_db
 
 security = HTTPBasic()
-
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
