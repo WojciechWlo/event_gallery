@@ -11,19 +11,19 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Witaj, {{ user }}!</h1>
-  <h2>Formularz przesyłania mediów</h2>
-  <form action="/upload-media" method="post" enctype="multipart/form-data">
-      <label for="name">Imię i nazwisko</label><br>
-      <input id="name" autocomplete="off" title="name" type="text" name="name" required><br>
-      <label for="files">Wybierz obrazki:</label><br>
-      <input id="files" title="files" type="file" name="files" accept="image/*, video/*" multiple required><br>
-      <br><br>
-      <button type="submit">Wyślij</button><div id = "loading"></div>
-  </form>
-  <div id="preview" class="preview-container"></div>
-  <div id="all-uploads-container"></div>
-
+  <div id="container" class="upload-container">
+    <h2>Formularz przesyłania mediów</h2>
+    <form action="/upload-media" method="post" enctype="multipart/form-data">
+        <label for="name">Imię i nazwisko</label>
+        <input id="name" autocomplete="off" title="name" type="text" name="name" required>
+        <label for="files">Wybierz obrazki:</label>
+        <input id="files" title="files" type="file" name="files" accept="image/*, video/*" multiple required>
+        <br>
+        <button type="submit">Wyślij</button><div id = "loading"></div>
+    </form>
+    <div id="preview" class="preview-container"></div>
+    <div id="all-uploads-container"></div>
+  </div>
   <script src="static/js/files_preview.js"></script>
   <script>
     const form = document.querySelector("form");

@@ -2,7 +2,7 @@
 import { downloadMedia, downloadAllMedia } from "./download_links.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const uploadsTableContainer = document.getElementById("uploads-table-container");
+    const uploadsTableContainer = document.getElementById("container");
 
     try {
         const response = await fetch("/list_uploads", {

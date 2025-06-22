@@ -27,7 +27,7 @@ async function loadMedia() {
         }
         
         const data = await res.json();
-        const container = document.getElementById("all-uploads-container");
+        const container = document.getElementById("container");
 
         data.uploads.forEach(upload => {
             const uploadContainer = document.createElement("div");

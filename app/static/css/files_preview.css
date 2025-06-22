@@ -1,6 +1,8 @@
 .preview-container {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
 }
 .image-preview {
@@ -12,4 +14,21 @@
     height: auto;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+.upload-container{
+    justify-items: center;
+}
+.upload-container > form{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    row-gap: 5px;
+}
+
+.upload-container > form > label{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: block;
 }
