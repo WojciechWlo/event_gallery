@@ -1,3 +1,4 @@
+/*
 function getFilenameFromContentDisposition(header) {
     try {
         const parts = header.split(";");
@@ -92,6 +93,73 @@ export async function downloadAllMedia(element) {
     } catch (error) {
         console.error("Error downloading all media ZIP:", error);
         alert("Download failed");
+        }
+    });
+}
+*/
+
+async function fetchDownloadOne(uploadId) {
+    const response = await fetch("/download_media_by_upload_id", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ upload_id: uploadId }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Download failed with status ${response.status}`);
+    }
+
+    const response_json = await response.json();
+
+    return response_json;
+}
+
+
+async function fetchDownloadAll() {
+    const response = await fetch("/download_all_media", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Download failed with status ${response.status}`);
+    }
+
+    const response_json = await response.json();
+
+    return response_json;
+}
+
+export function downloadMedia(element, uploadId) {
+    element.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        try {
+            const response = await fetchDownloadOne(uploadId);
+            
+            window.location.href = response.url;
+        } catch (error) {
+            console.error("Error downloading ZIP:", error);
+            alert("Download failed");
+        }
+    });
+}
+
+
+export function downloadAllMedia(element) {
+    element.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        try {
+            const response = await fetchDownloadAll();
+            window.location.href = response.url;
+        } catch (error) {
+            console.error("Error downloading ZIP:", error);
+            alert("Download failed");
         }
     });
 }

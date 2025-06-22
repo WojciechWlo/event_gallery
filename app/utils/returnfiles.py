@@ -2,11 +2,13 @@ from sqlalchemy.orm import Session, joinedload
 from models import Upload
 from database import get_db
 from fastapi.responses import StreamingResponse
-import io
-import zipfile
+from pathlib import Path
 import os
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 
+import tempfile
+from config import SERVER_URL
+import uuid
 
 def get_media_after_id(last_id: int | None, limit: int = 5) -> dict:
     db_gen = get_db()
@@ -47,43 +49,6 @@ def get_media_after_id(last_id: int | None, limit: int = 5) -> dict:
         db.close()
 
 
-def download_media_by_upload_id(upload_id: int) -> StreamingResponse:
-    db_gen = get_db()
-    db: Session = next(db_gen)
-
-    try:
-        upload = (
-            db.query(Upload)
-            .filter(Upload.id == upload_id)
-            .options(joinedload(Upload.media))
-            .first()
-        )
-
-        if not upload or not upload.media:
-            raise HTTPException(status_code=404, detail="Upload or media not found.")
-
-        file_paths = []
-        for media in upload.media:
-            cleaned_path = media.filename.replace("\\", "/")
-
-            if os.path.exists(cleaned_path):
-                file_paths.append(cleaned_path)
-
-        if not file_paths:
-            raise HTTPException(status_code=404, detail="No media files found on disk for this upload.")
-
-        base_dir = "media"
-
-        timestamp_str = upload.datetime.strftime("%Y%m%d%H%M%S")
-        safe_nickname = upload.nickname.replace(" ", "_")
-        zip_name = f"upload_{upload.id}_{safe_nickname}_{timestamp_str}.zip"
-
-        return create_zip_response_with_folders(base_dir, file_paths, zip_name)
-
-    finally:
-        db.close()
-
-
 def get_all_uploads() -> list[dict]:
     db_gen = get_db()
     db: Session = next(db_gen)
@@ -102,43 +67,20 @@ def get_all_uploads() -> list[dict]:
         db.close()
 
 
-def create_zip_response_with_folders(base_dir: str, file_paths: list[str], zip_name: str) -> StreamingResponse:
-    zip_buffer = io.BytesIO()
+def create_zip_from_files(file_paths: list[str], zip_path: str, base_dir: str = "media") -> None:
+    import zipfile
+    import os
 
-    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-        for file_path in file_paths:
-            arcname = os.path.relpath(file_path, base_dir)
-            zip_file.write(file_path, arcname=arcname)
-
-    zip_buffer.seek(0)
-
-    return StreamingResponse(
-        zip_buffer,
-        media_type="application/zip",
-        headers={"Content-Disposition": f"attachment; filename={zip_name}"}
-    )
-
-def create_zip_response_with_folders(base_dir: str, file_paths: list[str], zip_name: str) -> StreamingResponse:
-    zip_buffer = io.BytesIO()
-
-    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-        for file_path in file_paths:
-            arcname = os.path.relpath(file_path, base_dir)
-            zip_file.write(file_path, arcname=arcname)
-
-    zip_buffer.seek(0)
-
-    return StreamingResponse(
-        zip_buffer,
-        media_type="application/zip",
-        headers={"Content-Disposition": f"attachment; filename={zip_name}"}
-    )
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for file in file_paths:
+            arcname = os.path.relpath(file, base_dir)
+            print(f"Adding to zip: {file} as {arcname}")
+            zipf.write(file, arcname=arcname)
 
 
-def get_all_media_files_with_structure() -> StreamingResponse:
+def download_all_media_files() -> tuple[str, str]:
     db_gen = get_db()
     db: Session = next(db_gen)
-
     try:
         uploads = db.query(Upload).options(joinedload(Upload.media)).all()
 
@@ -152,14 +94,48 @@ def get_all_media_files_with_structure() -> StreamingResponse:
         if not file_paths:
             raise HTTPException(status_code=404, detail="No media files found in database.")
 
-        base_dir = os.path.commonpath(file_paths)
-
+        temp_dir = tempfile.mkdtemp(prefix="zip_")
         zip_name = "media_all.zip"
+        zip_path = os.path.join(temp_dir, zip_name)
 
-        return create_zip_response_with_folders(base_dir, file_paths, zip_name)
-    
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+        create_zip_from_files(file_paths, zip_path, base_dir="media")
+
+        return temp_dir, zip_name
+
+    finally:
+        db.close()
+
+def download_media_by_upload_id(upload_id: int) -> tuple[str, str]:
+    db_gen = get_db()
+    db: Session = next(db_gen)
+
+    try:
+        upload = (
+            db.query(Upload)
+            .filter(Upload.id == upload_id)
+            .options(joinedload(Upload.media))
+            .first()
+        )
+
+        if not upload or not upload.media:
+            raise HTTPException(status_code=404, detail="Upload or media not found.")
+
+        file_paths = []
+        for media in upload.media:
+            cleaned_path = media.filename.replace("\\", "/")
+            if os.path.exists(cleaned_path):
+                file_paths.append(cleaned_path)
+
+        if not file_paths:
+            raise HTTPException(status_code=404, detail="No media files found.")
+
+        temp_dir = tempfile.mkdtemp(prefix="zip_")
+        zip_name = f"upload_{upload.id}_{upload.nickname.replace(' ', '_')}_{upload.datetime.strftime('%Y%m%d%H%M%S')}.zip"
+        zip_path = os.path.join(temp_dir, zip_name)
+
+        create_zip_from_files(file_paths, zip_path, base_dir="media")
+
+        return temp_dir, zip_name
+
     finally:
         db.close()
