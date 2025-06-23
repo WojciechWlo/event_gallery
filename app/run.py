@@ -61,45 +61,27 @@ async def list_media_part(
     return JSONResponse(content=results)
 
 
-@app.get("/download/{zip_folder}/{zip_name}")
-async def serve_zip(
-    zip_folder: str,
-    zip_name: str,
-    background_tasks: BackgroundTasks,
-    user: str = Depends(authenticate_user),
-):
-    temp_dir = os.path.join(tempfile.gettempdir(), zip_folder)
-    zip_path = os.path.join(temp_dir, zip_name)
-
-    if not os.path.exists(zip_path):
-        raise HTTPException(status_code=404, detail="File not found")
-
-    background_tasks.add_task(shutil.rmtree, temp_dir)
-
-    return FileResponse(zip_path, media_type="application/zip", filename=zip_name)
-
-
 @app.post("/download_media_by_upload_id")
 async def download_media(
-    request: Request,
     background_tasks: BackgroundTasks,
+    upload_id: int = Form(...),
     user: str = Depends(authenticate_user),
 ):
-    data = await request.json()
-    upload_id = data.get("upload_id")
-
-    if not upload_id:
-        return JSONResponse(content={"error": "upload_id required"}, status_code=400)
-
     try:
         temp_dir, zip_name = download_media_by_upload_id(upload_id)
-        zip_folder = os.path.basename(temp_dir)
-        url = f"{SERVER_URL}/download/{zip_folder}/{zip_name}"
-        return JSONResponse(content={"url": url})
+        zip_path = os.path.join(temp_dir, zip_name)
+
+        if not os.path.exists(zip_path):
+            raise HTTPException(status_code=404, detail="ZIP file not created")
+
+        background_tasks.add_task(shutil.rmtree, temp_dir)
+
+        return FileResponse(zip_path, media_type="application/zip", filename=zip_name)
+
     except HTTPException as e:
-        return JSONResponse(content={"error": e.detail}, status_code=e.status_code)
+        raise e
     except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/download_all_media")
@@ -109,13 +91,19 @@ async def download_all_media(
 ):
     try:
         temp_dir, zip_name = download_all_media_files()
-        zip_folder = os.path.basename(temp_dir)
-        url = f"{SERVER_URL}/download/{zip_folder}/{zip_name}"
-        return JSONResponse(content={"url": url})
+        zip_path = os.path.join(temp_dir, zip_name)
+
+        if not os.path.exists(zip_path):
+            raise HTTPException(status_code=404, detail="ZIP file not created")
+
+        background_tasks.add_task(shutil.rmtree, temp_dir)
+
+        return FileResponse(zip_path, media_type="application/zip", filename=zip_name)
+
     except HTTPException as e:
-        return JSONResponse(content={"error": e.detail}, status_code=e.status_code)
+        raise e
     except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/list_uploads")
