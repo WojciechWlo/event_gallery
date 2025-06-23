@@ -108,14 +108,17 @@ async function fetchDownloadOne(uploadId) {
     });
 
     if (!response.ok) {
-        throw new Error(`Download failed with status ${response.status}`);
+        throw new Error("Download preparation failed");
     }
 
-    const response_json = await response.json();
+    const data = await response.json();
+    if (!data.url) {
+        throw new Error("No download URL returned");
+    }
 
-    return response_json;
+    // 🟢 Teraz zamiast fetch() – przekierowujemy do FileResponse
+    window.location.href = data.url; // lub window.open(data.url)
 }
-
 
 async function fetchDownloadAll() {
     const response = await fetch("/download_all_media", {
@@ -126,40 +129,53 @@ async function fetchDownloadAll() {
     });
 
     if (!response.ok) {
-        throw new Error(`Download failed with status ${response.status}`);
+        throw new Error("Download preparation failed");
     }
 
-    const response_json = await response.json();
+    const data = await response.json();
+    if (!data.url) {
+        throw new Error("No download URL returned");
+    }
 
-    return response_json;
+    window.location.href = data.url;
 }
 
 export function downloadMedia(element, uploadId) {
-    element.addEventListener("click", async (event) => {
+    element.addEventListener("click", (event) => {
         event.preventDefault();
 
-        try {
-            const response = await fetchDownloadOne(uploadId);
-            
-            window.location.href = response.url;
-        } catch (error) {
-            console.error("Error downloading ZIP:", error);
-            alert("Download failed");
-        }
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/download_media_by_upload_id";
+        form.style.display = "none";
+
+        form.enctype = "application/x-www-form-urlencoded";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "upload_id";
+        input.value = uploadId;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+
+        form.submit();
+        document.body.removeChild(form);
     });
 }
 
 
 export function downloadAllMedia(element) {
-    element.addEventListener("click", async (event) => {
+    element.addEventListener("click", (event) => {
         event.preventDefault();
 
-        try {
-            const response = await fetchDownloadAll();
-            window.location.href = response.url;
-        } catch (error) {
-            console.error("Error downloading ZIP:", error);
-            alert("Download failed");
-        }
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/download_all_media";
+        form.style.display = "none";
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
     });
 }
