@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./app /app/
 
-CMD ["python", "run.py"]
+CMD ["sh", "-c", "python /app/create_init_guest_user.py && uvicorn run:app --host 0.0.0.0 --port 8000 --ssl-certfile /certs/server.cert --ssl-keyfile /certs/server.key"]

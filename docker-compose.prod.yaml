@@ -4,7 +4,7 @@ services:
   fastapi:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: fastapi_prod
     env_file: .env.prod
     volumes:
@@ -15,8 +15,10 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     depends_on:
-      - db
-      - cert_generator
+      db:
+        condition: service_healthy
+      cert_generator:
+        condition: service_completed_successfully
     restart: unless-stopped
 
   db:
@@ -24,9 +26,18 @@ services:
     container_name: postgres_prod
     restart: unless-stopped
     env_file: .env.prod
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DB}    
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./initdb.prod.sql:/docker-entrypoint-initdb.d/initdb.prod.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $DATABASE_USER -d $DATABASE_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5      
       
   pgadmin:
     image: dpage/pgadmin4

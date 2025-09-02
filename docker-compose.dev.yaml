@@ -4,7 +4,7 @@ services:
   fastapi:
     build: 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     env_file: .env.dev
     container_name: fastapi_dev
     volumes:

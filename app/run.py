@@ -111,11 +111,10 @@ async def list_uploads(user: str = Depends(authenticate_user)):
     uploads_data = get_all_uploads()
     return JSONResponse(content=uploads_data)
 
-if __name__ == "__main__":
-    uvicorn.run("run:app", 
-                host="0.0.0.0", 
-                port=8000, 
-                reload=(APP_ENV == "development"),
+if __name__ == "__main__" and APP_ENV == "development":
+    uvicorn.run("run:app",
+                host="0.0.0.0",
+                port=8000,
+                reload=True,
                 ssl_keyfile=SSL_KEYFILE,
-                ssl_certfile=SSL_CERTFILE
-                )
+                ssl_certfile=SSL_CERTFILE)
