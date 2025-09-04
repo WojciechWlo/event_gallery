@@ -28,7 +28,7 @@ services:
     volumes:
       - ./app:/data
     ports:
-      - "8081:8080"
+      - "8082:8080"
     entrypoint: ["sqlite_web", "--host", "0.0.0.0", "/data/db.sqlite3"]
     depends_on:
       sqlite_loader:
