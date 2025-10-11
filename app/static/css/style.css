@@ -7,7 +7,7 @@ html, body {
 }
 
 header {
-    background-color: rgb(149, 100, 0);
+    background-color: rgb(230, 157, 0);
     padding: 10px 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     position: sticky;
@@ -16,7 +16,7 @@ header {
 }
 
 footer {
-    background-color: rgb(149, 100, 0);
+    background-color: rgb(230, 157, 0);
     padding: 10px 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     position: sticky;
@@ -41,7 +41,7 @@ footer {
     font-weight: 600;
     padding: 8px 15px;
     border-radius: 5px;
-    background-color: rgb(153, 121, 7);
+    background-color: rgb(190, 123, 21);
     transition: background-color 0.3s ease, transform 0.2s ease;
     display: inline-block;
     text-align: center;
@@ -49,7 +49,7 @@ footer {
 
 .nav-link:hover,
 .nav-link:focus {
-    background-color: rgb(129, 100, 0);
+    background-color: rgb(122, 80, 1);
     transform: translateY(-2px);
 }
 

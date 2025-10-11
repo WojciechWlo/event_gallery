@@ -42,7 +42,7 @@
 }
 
 .description-container{
-    margin-top: 10px;
+    margin-top: 40px;
     margin-bottom: 10px;
     padding: 10px;
     background-color: rgb(252, 200, 124);
@@ -50,8 +50,9 @@
     color: black;
 }
 
-@media(max-width: 768px) {
-    .media-element-wrapper {
-        width: calc(100% - 10px);
-    }
+@media (max-width: 768px) {
+  /* Tylko jeśli upload-media-container ma dokładnie jeden .media-element-wrapper */
+  .upload-media-container:has(> .media-element-wrapper:only-child) > .media-element-wrapper {
+    width: 100%;
+  }
 }

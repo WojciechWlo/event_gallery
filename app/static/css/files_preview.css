@@ -52,7 +52,7 @@
 
 .upload-container form button {
     padding: 10px;
-    background-color: rgb(153, 121, 7);
+    background-color: rgb(190, 123, 21);
     color: white;
     border: none;
     border-radius: 5px;
@@ -62,5 +62,5 @@
 }
 
 .upload-container form button:hover {
-    background-color: rgb(129, 100, 0);
+    background-color: rgb(122, 80, 1);
 }

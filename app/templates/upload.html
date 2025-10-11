@@ -29,10 +29,15 @@
   <script src="static/js/files_preview.js"></script>
   <script>
     const form = document.querySelector("form");
+    var latch = false;
 
     form.addEventListener("submit", async function (e) { 
       e.preventDefault();
 
+      if(latch)
+        return;
+
+      latch = true;
       const formData = new FormData(form);
 
       try {
@@ -44,14 +49,16 @@
 
         if (!response.ok) {
           throw new Error("Loading error: " + response.status);
+          latch = false;
         }
 
         const result = await response.json();
         form.reset();
         clearPreviews()
-
+        latch = false;
       } catch (err) {
         console.error("Error occured:", err);
+        latch = false;
       }
     });
 
