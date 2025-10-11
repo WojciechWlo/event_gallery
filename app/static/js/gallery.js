@@ -137,7 +137,7 @@ async function loadMedia() {
 
 async function autoLoadUntilScrollable() {
     while (
-        document.body.scrollHeight <= window.innerHeight &&
+        document.body.scrollHeight <= window.innerHeight+1 &&
         !noMoreMedia
     ) {
         const loaded = await loadMedia();

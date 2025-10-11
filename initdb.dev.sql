@@ -17,3 +17,19 @@ CREATE TABLE IF NOT EXISTS media (
     upload_id INTEGER,
     FOREIGN KEY (upload_id) REFERENCES uploads(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+);
+
+INSERT INTO roles (name) VALUES ('admin');
+
+CREATE TABLE IF NOT EXISTS hasRole (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    role_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+    UNIQUE (user_id, role_id)
+);

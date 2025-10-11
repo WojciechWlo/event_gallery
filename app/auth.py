@@ -8,7 +8,11 @@ from database import get_db
 security = HTTPBasic()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+    
+    try:
+        return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+    except:
+        return False
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security), db: Session = Depends(get_db)) -> str:
     users = db.query(User).all()
