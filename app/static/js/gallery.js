@@ -110,12 +110,6 @@ async function loadMedia() {
                 }
             }
 
-            if (upload.media.length ==1 && uploadMediaContainer.lastChild){
-                uploadMediaContainer.style.justifyContent = "center";
-                const lastWrapper = uploadMediaContainer.lastChild;
-                lastWrapper.style.width = "65%";
-            }
-
             uploadContainer.appendChild(uploadMediaContainer);
 
             if(upload.description!="")
