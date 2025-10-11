@@ -116,7 +116,17 @@ async function loadMedia() {
             }
 
             uploadContainer.appendChild(uploadMediaContainer);
+
+            if(upload.description!="")
+            {
+                const description = document.createElement("div");
+                description.classList.add("description-container");
+                description.innerHTML = upload.description;     
+                uploadContainer.appendChild(description);   
+            }
+
             container.appendChild(uploadContainer);
+   
         });
 
         lastId = data.last_id;

@@ -41,10 +41,11 @@ async def archive_page(request: Request, user: str = Depends(authenticate_user))
 @app.post("/upload-media")
 async def upload_media(
     name: str = Form(...),
+    description: str = Form(...),
     files: List[UploadFile] = File(...),
     user: str = Depends(authenticate_user),
 ):
-    urls = upload_files(files, name)
+    urls = upload_files(files, name, description)
 
     return JSONResponse(content={"uploaded_files": urls})
 

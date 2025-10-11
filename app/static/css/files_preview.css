@@ -43,7 +43,8 @@
 }
 
 .upload-container form input[type="text"],
-.upload-container form input[type="file"] {
+.upload-container form input[type="file"],
+.upload-container form textarea {
     padding: 8px;
     border-radius: 5px;
     border: 1px solid #ccc;

@@ -37,6 +37,7 @@ class Upload(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nickname = Column(String, index=True)
+    description = Column(String)
     datetime = Column(DateTime, default=datetime.utcnow)
     media = relationship("Media", back_populates="upload", cascade="all, delete-orphan")
 

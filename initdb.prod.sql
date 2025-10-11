@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS uploads (
     id SERIAL PRIMARY KEY,
     nickname TEXT,
+    description TEXT,
     datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

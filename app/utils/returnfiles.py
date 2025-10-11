@@ -31,6 +31,7 @@ def get_media_after_id(last_id: int | None, limit: int = 5) -> dict:
             results["uploads"].append({
                 "upload_id" : upload.id,
                 "nickname" : upload.nickname,
+                "description" : upload.description,
                 "datetime" : upload.datetime.strftime("%Y-%m-%d %H:%M:%S"),
                 "media": [
                     {

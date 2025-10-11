@@ -18,7 +18,7 @@ def save_upload_file(upload_file: UploadFile, dest_folder: str) -> str:
 
     return file_path
 
-def upload_files(files: List[UploadFile], name: str, server_url: str = SERVER_URL) -> List[str]:
+def upload_files(files: List[UploadFile], name: str, description: str, server_url: str = SERVER_URL) -> List[str]:
     now = datetime.utcnow()
     timestamp = now.strftime("%Y%m%d%H%M%S")
     base_path = f"./media/{timestamp}"
@@ -28,7 +28,7 @@ def upload_files(files: List[UploadFile], name: str, server_url: str = SERVER_UR
     db: Session = next(db_gen)
 
     try:
-        new_upload = Upload(nickname=name, datetime = now)
+        new_upload = Upload(nickname=name, datetime = now, description = description)
         db.add(new_upload)
         db.flush()
 

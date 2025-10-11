@@ -41,6 +41,14 @@
     text-shadow: 0 0 5px rgba(0,0,0,0.7);
 }
 
+.description-container{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: pink;
+    border-radius: 10px;
+}
+
 @media(max-width: 768px) {
     .media-element-wrapper {
         width: calc(100% - 10px);
