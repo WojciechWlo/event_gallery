@@ -8,9 +8,10 @@ let lastId = null;
 let noMoreMedia = false;
 let uploads_limit = 3;
 let media_limit = 4;
-
 async function loadMedia() {
+
     if (loading || noMoreMedia) return false;
+
     loading = true;
 
     try {
@@ -126,7 +127,10 @@ async function loadMedia() {
             }
 
             container.appendChild(uploadContainer);
-   
+
+            const separator = document.createElement("hr");
+            
+            container.appendChild(separator);
         });
 
         lastId = data.last_id;
@@ -147,7 +151,7 @@ async function loadMedia() {
 
 async function autoLoadUntilScrollable() {
     while (
-        document.body.scrollHeight <= window.innerHeight+1 &&
+        document.body.scrollHeight <= window.innerHeight &&
         !noMoreMedia
     ) {
         const loaded = await loadMedia();
@@ -169,10 +173,6 @@ function scrollHandler() {
         loadMedia();
     }
 }
-
-
-
-
 
 autoLoadUntilScrollable();
 window.addEventListener("scroll", scrollHandler);

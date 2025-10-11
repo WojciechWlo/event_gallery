@@ -53,3 +53,5 @@ instance/
 media/
 certs/
 temp/
+
+Caddyfile
