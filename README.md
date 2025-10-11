@@ -20,6 +20,13 @@ SSL_CERTFILE=/certs/server.cert
 
 GUEST_LOGIN=guest
 GUEST_PASSWORD=password
+
+ADMIN_LOGIN=admin
+ADMIN_PASSWORD=admin
+
+NOIP_USERNAME=s8abvg5@ddnskey.com
+NOIP_PASSWORD=6UtxuqrC5CJv
+NOIP_HOSTNAMES=all.ddnskey.com
 ```
 * .env.prod
 ```
@@ -28,9 +35,6 @@ DEBUG=False
 
 SERVER_URL=https://localhost:8000
 
-SSL_KEYFILE=/certs/server.key
-SSL_CERTFILE=/certs/server.cert
-
 DATABASE_USER=admin
 DATABASE_PASSWORD=securepassword123
 DATABASE_DB=pgdb
@@ -38,6 +42,14 @@ DATABASE_URL=postgresql+psycopg2://admin:securepassword123@db:5432/pgdb
 
 GUEST_LOGIN=guest
 GUEST_PASSWORD=password
+
+ADMIN_LOGIN=admin
+ADMIN_PASSWORD=admin
+
+NOIP_USERNAME=s8abvg5@ddnskey.com
+NOIP_PASSWORD=6UtxuqrC5CJv
+NOIP_HOSTNAMES=all.ddnskey.com
+
 ```
 
 # Run Project

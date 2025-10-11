@@ -8,8 +8,7 @@ from utils.savefiles import upload_files
 import uvicorn
 import os
 import shutil
-import tempfile
-from config import SERVER_URL
+from config import EVENT_GALLERY_HOST, EVENT_GALLERY_PORT
 from utils.returnfiles import get_media_after_id,\
                               download_media_by_upload_id, \
                               get_all_uploads, \
@@ -111,10 +110,10 @@ async def list_uploads(user: str = Depends(authenticate_user)):
     uploads_data = get_all_uploads()
     return JSONResponse(content=uploads_data)
 
-if __name__ == "__main__" and APP_ENV == "development":
+if __name__ == "__main__":
     uvicorn.run("run:app",
-                host="0.0.0.0",
-                port=8000,
-                reload=True,
+                host=EVENT_GALLERY_HOST,
+                port=EVENT_GALLERY_PORT,
+                reload=APP_ENV == "development",
                 ssl_keyfile=SSL_KEYFILE,
                 ssl_certfile=SSL_CERTFILE)

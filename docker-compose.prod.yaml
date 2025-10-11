@@ -1,40 +1,34 @@
 version: '3.8'
 
 services:
-  fastapi:
+  event_gallery:
     build:
       context: .
       dockerfile: Dockerfile.prod
     container_name: fastapi_prod
     env_file: .env.prod
-    volumes:
-      - ./app/media:/app/media
-      - ./certs:/certs
     ports:
       - "8000:8000"
+    volumes:
+      - ./app/media:/app/media
     environment:
       - PYTHONUNBUFFERED=1
     depends_on:
       db:
         condition: service_healthy
-      cert_generator:
-        condition: service_completed_successfully
     restart: unless-stopped
+    command: "uvicorn run:app --host $$EVENT_GALLERY_HOST --port $$EVENT_GALLERY_PORT"
 
   db:
     image: postgres:15
     container_name: postgres_prod
     restart: unless-stopped
-    env_file: .env.prod
-    environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_DB}    
+    env_file: .env.prod 
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./initdb.prod.sql:/docker-entrypoint-initdb.d/initdb.prod.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $DATABASE_USER -d $DATABASE_DB"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 5      
@@ -45,23 +39,32 @@ services:
     restart: unless-stopped
     ports:
       - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}admin123
+    env_file: .env.prod
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - db
 
-  cert_generator:
-    image: alpine/openssl:3.5.0
-    container_name: cert_generator
+  noip:
+    image: noipcom/noip-duc:latest
+    env_file:
+      - .env.prod
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy_proxy
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./certs:/certs
-      - ./cert_gen.sh:/cert_gen.sh:ro
-    entrypoint: ["sh", "/cert_gen.sh"]
-    restart: "no"
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - event_gallery
 
 volumes:
   postgres_data:
   pgadmin_data:
+  caddy_data:
+  caddy_config:
