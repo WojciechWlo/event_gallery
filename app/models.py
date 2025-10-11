@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Table
+from sqlalchemy.orm import relationship, declarative_base
 from database import Base
 from datetime import datetime
 from enum import Enum
@@ -8,6 +8,13 @@ class MediaTypeEnum(str, Enum):
     image = "image"
     video = "video"
 
+Base = declarative_base()
+
+hasRole = Table(
+    "hasRole", Base.metadata,
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE")),
+    Column("role_id", Integer, ForeignKey("roles.id", ondelete="CASCADE"))
+)
 
 class User(Base):
     __tablename__ = "users"
@@ -15,7 +22,15 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     hashed_password = Column(String)
+    
+    roles = relationship("Role", secondary=hasRole, back_populates="users")
 
+class Role(Base):
+    __tablename__ = "roles"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    
+    users = relationship("User", secondary=hasRole, back_populates="roles")
 
 class Upload(Base):
     __tablename__ = "uploads"

@@ -1,6 +1,8 @@
 // static/js/archives.js
 import { downloadMedia, downloadAllMedia } from "./download_links.js";
 
+const roles = JSON.parse(document.body.dataset.roles);
+
 document.addEventListener("DOMContentLoaded", async () => {
     const uploadsTableContainer = document.getElementById("container");
 
@@ -62,12 +64,46 @@ document.addEventListener("DOMContentLoaded", async () => {
             tdDate.textContent = new Date(upload.datetime).toLocaleString();
 
             const tdLink = document.createElement("td");
-            const link = document.createElement("a");
-            link.href = "#";
-            link.textContent = "Pobierz";
-            link.className = "download-link";
-            downloadMedia(link, upload.id);
-            tdLink.appendChild(link);
+            const downloadLink = document.createElement("a");
+            downloadLink.href = "#";
+            downloadLink.textContent = "Pobierz";
+            downloadLink.className = "download-link";
+            downloadMedia(downloadLink, upload.id);
+            tdLink.appendChild(downloadLink);
+
+            if(roles.includes("admin"))
+            {
+                const deleteLink = document.createElement("a");
+                deleteLink.href = "#";
+                deleteLink.textContent = "Usuń";
+                deleteLink.className = "delete-link";
+                deleteLink.style.marginLeft = "10px";
+                tdLink.appendChild(deleteLink);
+
+
+                deleteLink.addEventListener("click", async (e) => {
+                    e.preventDefault();
+
+                    const confirmed = confirm("Czy na pewno chcesz usunąć?");
+                    if (!confirmed) return;
+
+                    const formData = new FormData();
+                    formData.append("upload_id", upload.id);
+
+                    const response = await fetch("/delete_upload_by_id", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        alert("Usunięto!");
+                        row.parentElement.remove();
+                    } else {
+                        alert("Błąd podczas usuwania");
+                    }
+                });            
+            }
+
 
             row.appendChild(tdId);
             row.appendChild(tdNickname);

@@ -12,7 +12,7 @@
     {% endblock %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 </head>
-<body>
+<body data-roles='{{ roles | tojson | safe }}'>
     <header>
         <h1>{% block header %}
             {% endblock %}

@@ -14,6 +14,8 @@ from utils.returnfiles import get_media_after_id,\
                               get_all_uploads, \
                               download_all_media_files
 from config import DEBUG, APP_ENV, SSL_KEYFILE, SSL_CERTFILE
+from utils.getroles import get_roles
+from utils.deletefiles import delete_upload_by_id
 
 app = FastAPI(debug=DEBUG)
 templates = Jinja2Templates(directory="templates")
@@ -26,15 +28,15 @@ app.mount("/temp", StaticFiles(directory="temp", html=False), name="temp")
 
 @app.get("/", response_class=HTMLResponse)
 async def gallery_page(request: Request, user: str = Depends(authenticate_user)):
-    return templates.TemplateResponse("index.html", {"request": request, "user": user})
+    return templates.TemplateResponse("index.html", {"request": request, "user": user, "roles":get_roles(user)})
 
 @app.get("/upload", response_class=HTMLResponse)
 async def upload_page(request: Request, user: str = Depends(authenticate_user)):
-    return templates.TemplateResponse("upload.html", {"request": request, "user": user})
+    return templates.TemplateResponse("upload.html", {"request": request, "user": user, "roles":get_roles(user)})
 
 @app.get("/archive", response_class=HTMLResponse)
 async def archive_page(request: Request, user: str = Depends(authenticate_user)):
-    return templates.TemplateResponse("archive.html", {"request": request, "user": user})
+    return templates.TemplateResponse("archive.html", {"request": request, "user": user, "roles":get_roles(user)})
 
 @app.post("/upload-media")
 async def upload_media(
@@ -109,6 +111,23 @@ async def download_all_media(
 async def list_uploads(user: str = Depends(authenticate_user)):
     uploads_data = get_all_uploads()
     return JSONResponse(content=uploads_data)
+
+@app.post("/delete_upload_by_id")
+async def delete_upload(
+    upload_id: int = Form(...),
+    user: str = Depends(authenticate_user),
+):
+    try:
+        if "admin" in get_roles(user) and delete_upload_by_id(upload_id):
+            return True
+        else:
+            raise HTTPException(status_code=404, detail="User has not such privileges.")
+            
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    
 
 if __name__ == "__main__":
     uvicorn.run("run:app",

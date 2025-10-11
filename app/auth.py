@@ -15,16 +15,15 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 def authenticate_user(credentials: HTTPBasicCredentials = Depends(security), db: Session = Depends(get_db)) -> str:
-    users = db.query(User).all()
-    if len(users)<1:
+    
+    user = db.query(User).filter(User.name == credentials.username).first()
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No users in database",
+            detail="Invalid username",
             headers={"WWW-Authenticate": "Basic"},
         )
     
-    user = users[0]
-
     if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
