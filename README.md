@@ -35,9 +35,12 @@ DEBUG=False
 
 SERVER_URL=https://localhost:8000
 
-DATABASE_USER=admin
-DATABASE_PASSWORD=securepassword123
-DATABASE_DB=pgdb
+PGADMIN_DEFAULT_EMAIL=admin@example.com
+PGADMIN_DEFAULT_PASSWORD=admin123
+
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=securepassword123
+POSTGRES_DB=pgdb
 DATABASE_URL=postgresql+psycopg2://admin:securepassword123@db:5432/pgdb
 
 GUEST_LOGIN=guest

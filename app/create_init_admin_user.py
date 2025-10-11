@@ -50,7 +50,7 @@ with engine.begin() as conn:
 
     # 3️⃣ Przypisz rolę 'admin' użytkownikowi, jeśli jeszcze nie ma
     has_role = conn.execute(
-        text("SELECT id FROM hasRole WHERE user_id = :uid AND role_id = :rid"),
+        text("SELECT id FROM has_role WHERE user_id = :uid AND role_id = :rid"),
         {"uid": user_id, "rid": role_id}
     ).first()
 
@@ -58,7 +58,7 @@ with engine.begin() as conn:
         print(f"User '{ADMIN_LOGIN}' already has role 'admin' — skipping.")
     else:
         conn.execute(
-            text("INSERT INTO hasRole (user_id, role_id) VALUES (:uid, :rid)"),
+            text("INSERT INTO has_role (user_id, role_id) VALUES (:uid, :rid)"),
             {"uid": user_id, "rid": role_id}
         )
         print(f"Role 'admin' assigned to user '{ADMIN_LOGIN}'.")

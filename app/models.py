@@ -8,12 +8,10 @@ class MediaTypeEnum(str, Enum):
     image = "image"
     video = "video"
 
-Base = declarative_base()
-
-hasRole = Table(
-    "hasRole", Base.metadata,
-    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE")),
-    Column("role_id", Integer, ForeignKey("roles.id", ondelete="CASCADE"))
+has_role = Table(
+    "has_role", Base.metadata,
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
+    Column("role_id", Integer, ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True)
 )
 
 class User(Base):
@@ -23,14 +21,14 @@ class User(Base):
     name = Column(String, index=True)
     hashed_password = Column(String)
     
-    roles = relationship("Role", secondary=hasRole, back_populates="users")
+    roles = relationship("Role", secondary=has_role, back_populates="users")
 
 class Role(Base):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     
-    users = relationship("User", secondary=hasRole, back_populates="roles")
+    users = relationship("User", secondary=has_role, back_populates="roles")
 
 class Upload(Base):
     __tablename__ = "uploads"

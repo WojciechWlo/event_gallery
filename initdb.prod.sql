@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS roles (
 
 INSERT INTO roles (name) VALUES ('admin');
 
-CREATE TABLE IF NOT EXISTS hasRole (
+CREATE TABLE IF NOT EXISTS has_role (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     role_id INTEGER NOT NULL,
