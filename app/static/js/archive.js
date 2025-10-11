@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     if (response.ok) {
                         alert("Usunięto!");
-                        row.parentElement.remove();
+                        row.remove();
                     } else {
                         alert("Błąd podczas usuwania");
                     }
